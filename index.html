@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phrase Practice</title>
+<style>
+:root{
+  color-scheme:light dark;
+  --paper:#F4F6FB;--sheet:#FFFFFF;--ink:#101733;--ink2:#566082;--line:#DCE1F0;
+  --pri:#2C3BFF;--pri-ink:#FFFFFF;--pri-soft:#E8EBFF;
+  --hl:rgba(255,205,0,.78);
+  --m0:#0E8F6E;--m1:#D9480F;--m2:#8B3FD9;--m3:#D6336C;--m4:#0B8FB5;--m5:#A16207;
+  --s0:var(--pri);--s1:var(--m0);--s2:var(--m1);--s3:var(--m2);--s4:var(--m3);--s5:var(--m5);
+  --hero:#2C3BFF;
+  --ok:#10795A;--ok-soft:#DDF4EA;--bad:#B93228;--bad-soft:#FDE7E4;--warn:#7D5200;--warn-soft:#FFF0C7;
+  --shadow:0 1px 0 var(--line),0 22px 44px -30px rgba(16,23,51,.45);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Charter,"Bitstream Charter",Georgia,serif;
+  --sans:"Avenir Next","Segoe UI Variable","Segoe UI",Inter,system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#0C0F1F;--sheet:#151934;--ink:#EDEFFC;--ink2:#9EA6C8;--line:#2A3053;
+  --pri:#8F9BFF;--pri-ink:#0C0F1F;--pri-soft:#232A5A;
+  --hl:rgba(255,205,0,.36);
+  --m0:#5BD6A4;--m1:#FF9A63;--m2:#C79BFF;--m3:#FF8FB8;--m4:#58CFF0;--m5:#F3C550;
+  --hero:#2A36D6;
+  --ok:#5BD6A4;--ok-soft:#10322B;--bad:#FF9188;--bad-soft:#3A1F24;--warn:#F3C550;--warn-soft:#352C10;
+  --shadow:0 1px 0 var(--line),0 22px 44px -30px rgba(0,0,0,.8);
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:18px/1.6 var(--sans)}
+#app{max-width:1560px;margin:0 auto;padding:24px 48px 96px}
+.homegrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:64px;align-items:start}
+.homegrid .hero{position:sticky;top:48px;padding:56px 0 24px}
+.homeside h2:first-child{margin-top:34px}
+.qgrid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start}
+.side{position:sticky;top:20px;min-height:120px}
+.side #fb{margin-top:0}
+.tip{border:1.5px dashed var(--line);border-radius:22px;padding:24px 26px;color:var(--ink2);font-size:17px}
+.tip b{color:var(--ink)}
+.tip{padding:18px 20px!important}
+.tl{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.tl li{display:flex;align-items:center;gap:10px;font-size:16px;line-height:1.35;color:var(--ink);white-space:nowrap}
+.ti{flex:none;width:36px;height:36px;border-radius:12px;background:var(--pri-soft);color:var(--pri);display:grid;place-items:center}
+kbd{font:600 13px/1 var(--sans);padding:3px 8px;border-radius:7px;border:1px solid var(--line);background:var(--sheet);color:var(--ink2);box-shadow:0 1px 0 var(--line);margin-left:2px}
+
+.ctl{justify-content:flex-start;gap:8px;margin-top:20px}
+.ctl .grow{flex:1}
+.ctl .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;font-size:16.5px}
+.ctl .btn svg{width:18px;height:18px;flex:none}
+.ctl .btn.ghost svg{color:var(--sc,var(--pri))}
+.sheet .ctl{margin-top:26px;padding-top:20px;border-top:1px solid var(--line)}
+.ctl .btn.primary{padding:12px 28px}
+.opt.out{opacity:.35;text-decoration:line-through}
+.btn.ghost:disabled{border-style:dashed}
+.tip p{margin:6px 0}
+.sgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.sgrid h2:first-child{margin-top:8px}
+@media (max-width:1000px){
+  #app{max-width:880px;padding:18px 24px 90px}
+  .homegrid,.qgrid,.sgrid{grid-template-columns:minmax(0,1fr);gap:0}
+  .homegrid .hero{position:static;padding:30px 0 10px}
+  .homeside h2:first-child{margin-top:26px}
+  .side{position:static;min-height:0}
+  .side #fb{margin-top:16px}
+  .tip{display:none}
+  .sgrid h2:first-child{margin-top:30px}
+}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+mark{background:linear-gradient(transparent 56%,var(--hl) 56%);color:inherit;padding:0 1px;border-radius:2px}
+.no-tts .say{display:none!important}
+
+/* top bars */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.brand{font-family:var(--serif);font-weight:700;font-size:26px;letter-spacing:-.01em}
+.icon-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:var(--sheet);display:grid;place-items:center;cursor:pointer;flex:none}
+.icon-btn:hover{border-color:var(--pri)}
+.snd-wrap{position:relative}
+.snd{position:absolute;right:0;top:50px;width:340px;background:var(--sheet);border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 18px 50px -12px rgba(16,23,51,.35);z-index:30}
+.snd-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}
+.snd-row+.snd-row{border-top:1px solid var(--line)}
+.snd-row>span{font-size:16.5px}
+.segc{display:flex;background:var(--paper);border-radius:11px;padding:3px;gap:2px}
+.segc button{border:0;background:transparent;padding:7px 13px;border-radius:9px;font-size:15.5px;cursor:pointer;color:var(--ink2)}
+.segc button.on{background:var(--sheet);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(16,23,51,.2)}
+.sw{width:46px;height:27px;border-radius:99px;border:0;background:var(--line);position:relative;cursor:pointer;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:transform .18s}
+.sw.on{background:var(--pri)}.sw.on::after{transform:translateX(19px)}
+.snd-note{font-size:14.5px;color:var(--ink2);margin:6px 0 0}
+
+/* audio buttons */
+.say{width:48px;height:48px;border-radius:50%;border:0;background:var(--pri-soft);color:var(--pri);display:grid;place-items:center;cursor:pointer;flex:none;transition:background .15s,transform .1s}
+.say:hover{background:var(--pri);color:var(--pri-ink)}
+.say:active{transform:scale(.94)}
+.say.mini{width:38px;height:38px}.say.mini svg{width:19px;height:19px}
+.say.big{width:60px;height:60px;background:var(--pri);color:var(--pri-ink)}
+.say.big svg{width:28px;height:28px}
+.say.big:hover{filter:brightness(1.1)}
+.say.playing{background:var(--pri);color:var(--pri-ink)}
+.say.playing .w{animation:wv .7s ease-in-out infinite}
+.say.playing .w2{animation-delay:.18s}
+@keyframes wv{0%,100%{opacity:.25}50%{opacity:1}}
+
+/* home */
+.hero{padding:30px 0 26px}
+.term-row{display:flex;align-items:center;gap:18px}
+.term{font-family:var(--serif);font-weight:700;font-size:clamp(34px,4.6vw,58px);line-height:1.08;letter-spacing:-.02em;margin:0;min-width:0;flex:1;overflow-wrap:anywhere}
+.hero .def{font-size:21px;color:var(--ink2);margin:14px 0 8px;max-width:34em}
+.hero .eg{font-family:var(--serif);font-style:italic;font-size:23px;line-height:1.55;margin:0 0 4px;max-width:30em}
+.eg-row{display:flex;gap:10px;align-items:flex-start}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.vi{display:block;margin-top:3px;color:var(--ink2);font-size:.94em;line-height:1.45}
+.vl{display:inline-block;margin-right:7px;padding:0 6px;border-radius:5px;background:var(--pri-soft);color:var(--pri);font:700 11px/17px var(--sans);font-style:normal;letter-spacing:.03em;vertical-align:1px}
+.vi-hero{margin:6px 0 0;font-size:19px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:44px;max-width:560px}
+.st{display:grid;align-content:start;gap:2px;justify-items:start;padding:16px 18px;border:1px solid var(--line);border-radius:20px;background:var(--sheet);box-shadow:0 3px 0 var(--line)}
+.st .si{display:grid;place-items:center;width:36px;height:36px;margin-bottom:8px;border-radius:12px;background:var(--pri-soft);color:var(--pri)}
+.st b{font-family:var(--serif);font-size:32px;line-height:1.1;letter-spacing:-.01em}
+.st b small{font:600 16px var(--sans);color:var(--ink2);letter-spacing:0}
+.st>span:last-child{font-size:15px;color:var(--ink2)}
+.btn{padding:14px 26px;border-radius:14px;border:1.5px solid var(--line);background:var(--sheet);font-weight:650;cursor:pointer}
+.btn:hover:not(:disabled){border-color:var(--pri)}
+.btn.primary{background:var(--pri);border-color:var(--pri);color:var(--pri-ink);box-shadow:0 10px 22px -12px var(--pri)}
+.btn.primary:hover:not(:disabled){filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.btn.wide{width:100%;margin-top:16px;padding:14px}
+.btn.sm{padding:7px 14px;font-size:16px;border-radius:10px}
+.btn:disabled{opacity:.45;cursor:default}
+h2{font-size:25px;margin:30px 0 12px;font-family:var(--serif);letter-spacing:-.01em}
+.route{list-style:none;margin:0;padding:0}
+.route li{position:relative}
+.route li:not(:last-child)::before{content:"";position:absolute;left:24px;top:54px;bottom:-8px;width:2px;background:var(--line)}
+.stage{display:flex;gap:16px;align-items:center;width:100%;text-align:left;padding:10px 10px 10px 0;margin:0 0 8px;border:0;border-radius:14px;background:transparent;cursor:pointer}
+.stage:hover:not(:disabled){background:var(--sheet)}
+.node{flex:none;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:var(--sheet);border:2px solid var(--line);font-weight:700;font-family:var(--serif);font-size:21px;position:relative;z-index:1}
+.node{border-color:color-mix(in srgb,var(--sc,var(--pri)) 40%,var(--line));color:var(--sc,var(--pri))}
+.node.done{background:var(--sc,var(--ok));border-color:var(--sc,var(--ok));color:var(--sheet)}
+.node.next{border-color:var(--sc,var(--pri));box-shadow:0 0 0 5px color-mix(in srgb,var(--sc,var(--pri)) 18%,transparent)}
+.stage .s{flex:1;min-width:0}.stage .s b{display:block;font-size:20px}.stage .s small{color:var(--ink2);font-size:16px}
+.stage .sm{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:14.5px;color:var(--ink2);white-space:nowrap}
+.mini-meter{width:90px;height:5px;border-radius:9px;background:var(--line);overflow:hidden;display:block}.mini-meter i{display:block;height:100%;background:var(--sc,var(--ok))}
+.review-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.h2row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-top:30px}
+.h2row h2{margin:0 0 12px}
+.h2row .muted{margin:0 0 12px;font-size:15.5px}
+.acts{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.acts .stage{margin:0;padding:18px 22px;background:var(--sheet);border:1px solid var(--line);border-radius:18px;transition:border-color .15s,transform .12s}
+.acts .stage:hover:not(:disabled){border-color:var(--pri);background:var(--sheet);transform:translateY(-1px)}
+.acts .stage:disabled{cursor:default}
+.acts .stage:disabled .s b{color:var(--ink2)}
+.node.ic{border:0;border-radius:14px;background:var(--pri-soft);color:var(--pri)}
+.node.ic.warn{background:var(--warn-soft);color:var(--warn)}
+.stage:disabled .node.ic{background:var(--paper);color:var(--ink2)}
+.pill{min-width:30px;text-align:center;padding:3px 11px;border-radius:99px;background:var(--warn-soft);color:var(--warn);font-weight:750;font-size:17px}
+.pill.zero{background:var(--paper);color:var(--ink2);font-weight:600}
+.foot{border-top:1px solid var(--line);padding-top:16px}
+.foot{margin-top:34px}
+.link{background:none;border:0;color:var(--ink2);text-decoration:underline;font-size:15.5px;cursor:pointer;padding:0}
+
+/* quiz */
+.qtop{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.qt{flex:1;min-width:0}
+.stg{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cnt{color:var(--ink2);font-size:15px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:18px}
+.progress i{display:block;position:relative;height:100%;background:var(--sc,var(--pri));border-radius:99px;transition:width .35s}
+.progress i::after{content:"";position:absolute;right:0;top:0;bottom:0;width:12px;border-radius:99px;background:#FFCD00}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:28px;padding:34px 34px 30px;box-shadow:var(--shadow)}
+.meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tag{font-size:14.5px;font-weight:650;padding:3px 11px;border-radius:99px;background:color-mix(in srgb,var(--sc,var(--pri)) 14%,var(--sheet));color:var(--sc,var(--pri))}
+.tag.retry{background:var(--warn-soft);color:var(--warn)}
+.instr{font-size:15.5px;color:var(--ink2)}
+.pr{display:flex;gap:12px;align-items:flex-start;margin-bottom:18px}
+.prompt{font-family:var(--serif);font-size:26px;line-height:1.6;flex:1;min-width:0}
+.blank{display:inline-block;min-width:5.2em;height:1.15em;margin:0 3px;vertical-align:text-bottom;border-bottom:3px solid var(--pri);border-radius:7px 7px 0 0;background:var(--pri-soft)}
+.sg{white-space:nowrap}.sg b{font-family:var(--sans);font-size:11px;vertical-align:super;margin-right:2px;color:var(--pri)}.sg u{text-underline-offset:4px}
+.clue{font-size:16.5px;color:var(--ink2);margin:-6px 0 14px}
+.opts{display:grid;gap:10px}
+.opt-row{display:flex;gap:8px;align-items:center}
+.opt{flex:1;display:flex;gap:14px;align-items:center;text-align:left;padding:16px 20px;border:1.5px solid var(--line);background:var(--sheet);border-radius:16px;box-shadow:0 3px 0 var(--line);font-size:19px;cursor:pointer;min-width:0;transition:transform .12s,border-color .15s,background .15s}
+.opt:hover:not(:disabled){border-color:var(--pri);background:var(--pri-soft);transform:translateX(3px)}
+.opt:disabled{cursor:default;opacity:1}
+.opt .k{flex:none;width:34px;height:34px;border-radius:10px;background:var(--pri-soft);color:var(--pri);display:grid;place-items:center;font-weight:700;font-size:16px}
+.opt .t{overflow-wrap:anywhere}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft);box-shadow:0 3px 0 var(--ok)}.opt.correct .k{background:var(--ok);color:#fff}
+.opt.correct::after,.opt.wrong::after{margin-left:auto;font-weight:800;font-size:21px;line-height:1}
+.opt.correct::after{content:"\2713";color:var(--ok)}.opt.wrong::after{content:"\2715";color:var(--bad)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 3px 0 var(--bad)}.opt.wrong .k{background:var(--bad);color:#fff}
+input#inp{width:100%;padding:17px 20px;font:inherit;font-size:25px;font-family:var(--serif);border:1.5px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink)}
+input#inp.okc{border-color:var(--ok);background:var(--ok-soft)}input#inp.badc{border-color:var(--bad);background:var(--bad-soft)}
+.row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.hint{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 22px;min-height:8px;margin-top:6px;color:var(--ink2)}
+.hint:not(:empty){margin-top:16px}
+.hw{display:inline-flex;gap:5px}
+.slot{display:inline-grid;place-items:end center;width:27px;height:38px;border-bottom:3px solid var(--ink2);font:600 26px/1.15 var(--serif);font-style:normal}
+.slot.f{border-color:var(--pri);color:var(--pri)}
+.hint .si{font-size:16px}
+.mwrap{position:relative}
+.mlines{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:0}
+.mlines path{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0;animation:draw .45s ease-out}
+@keyframes draw{from{stroke-dashoffset:1}}
+.mcols{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);column-gap:76px;align-items:start}
+.mcol{display:grid;gap:12px;align-content:start}
+.mrow{display:flex;gap:8px;align-items:center}
+.mi{position:relative;flex:1;min-width:0;min-height:60px;display:flex;align-items:center;padding:12px 18px;border:1.5px solid var(--line);border-radius:16px;background:var(--sheet);box-shadow:0 3px 0 var(--line);font:inherit;font-size:18px;line-height:1.4;color:var(--ink);text-align:left;cursor:pointer;overflow-wrap:anywhere;transition:border-color .15s,background .15s,transform .12s}
+.mi::after{content:"";position:absolute;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;border:3px solid var(--line);background:var(--sheet);transition:background .15s,border-color .15s}
+#ml .mi::after{right:-8px}#mr .mi::after{left:-8px}
+#ml .mi{font-weight:650}
+#mr .mi{padding-left:26px}
+.mi:hover:not(.done){border-color:var(--pri)}
+.mwrap.picking #mr .mi:not(.done)::after{border-color:var(--pri)}
+.mwrap.picking #mr .mi:not(.done):hover{background:var(--pri-soft)}
+.mi.sel{border-color:var(--pri);background:var(--pri-soft);box-shadow:0 3px 0 var(--pri)}
+.mi.sel::after{background:var(--pri);border-color:var(--pri)}
+.mi.done,#mr .mi.done{padding-left:52px;border-color:var(--mc);background:color-mix(in srgb,var(--mc) 11%,var(--sheet));box-shadow:0 3px 0 color-mix(in srgb,var(--mc) 45%,var(--line));cursor:default}
+.mi.done::before{content:"\2713";position:absolute;left:14px;top:50%;margin-top:-13px;width:26px;height:26px;border-radius:50%;background:var(--mc);color:var(--sheet);display:grid;place-items:center;font-size:15px;font-weight:800;line-height:1}
+.mi.done::after{background:var(--mc);border-color:var(--mc)}
+.mi.bad{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 3px 0 var(--bad)}
+.mi.bad::after{border-color:var(--bad)}
+.mfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;flex-wrap:wrap}
+.cp{padding:2px 12px;border-radius:99px;background:var(--pri-soft);color:var(--pri);font-size:15.5px;font-weight:650;white-space:nowrap}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.mnote{font-size:16.5px;color:var(--ink2);min-height:1.4em}
+em{font-style:italic;font-weight:600}
+.story{padding:20px 26px 10px;border:1px solid var(--line);border-left:5px solid var(--hl);border-radius:18px;background:var(--paper)}
+.story .line{margin:0 0 8px;font-family:var(--serif);font-size:23px;line-height:2}
+.spk{color:var(--pri);font-family:var(--sans);font-size:17px;font-weight:700;margin-right:4px}
+.story-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.story-head b{font-size:20px}
+.gap{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;min-width:124px;height:40px;margin:0 3px;padding:0 16px;border:2px dashed var(--pri);border-radius:11px;background:var(--sheet);color:var(--pri);font-family:var(--sans);font-size:19px;font-weight:650;line-height:1;cursor:pointer;transition:background .15s,border-color .15s}
+.gap:hover{background:var(--pri-soft)}
+.gn{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--pri-soft);color:var(--pri);font-size:14px;font-weight:700}
+.gap.filled{border-style:solid;background:var(--pri-soft)}
+.gap.active{outline:3px solid var(--pri);outline-offset:2px;background:var(--sheet)}
+.gap.filled.active{background:var(--pri-soft)}
+.gap.locked{border-style:solid;border-color:var(--warn);background:var(--warn-soft);color:var(--warn);cursor:default}
+.gap.okc{border-style:solid;border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.gap.badc{border-style:solid;border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.bankwrap{margin-top:18px;padding:16px 18px 18px;border-radius:18px;background:var(--pri-soft)}
+.bank-l{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;font-size:15.5px;font-weight:650;color:var(--ink2)}
+.bank-l .cp{background:var(--sheet)}
+.bank{display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:10px 20px;border-radius:12px;border:1.5px solid var(--line);background:var(--sheet);box-shadow:0 3px 0 var(--line);font-size:18px;font-weight:600;color:var(--ink);cursor:pointer;transition:transform .1s,border-color .15s}
+.chip:hover:not(:disabled){border-color:var(--pri);transform:translateY(-1px)}
+.chip:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.chip:disabled{cursor:default;background:transparent;border-style:dashed;box-shadow:none;color:var(--ink2);opacity:.5}
+.chip.out:disabled{opacity:.3;text-decoration:line-through}
+.rline{min-height:78px;display:flex;flex-wrap:wrap;gap:10px;padding:12px 14px;border:2px dashed var(--line);border-radius:18px;background:var(--paper);margin-bottom:20px;align-items:center}
+.rline .ph{color:var(--ink2);font-size:16.5px}
+.pool{display:flex;flex-wrap:wrap;gap:12px 10px}
+.rline+.bankwrap{margin-top:0}
+.tile{padding:10px 20px;border-radius:12px;border:1.5px solid var(--line);background:var(--sheet);box-shadow:0 3px 0 var(--line);color:var(--ink);cursor:pointer;font-family:var(--serif);font-size:23px;transition:transform .1s,border-color .15s}
+.tile:hover{border-color:var(--pri);transform:translateY(-1px)}
+.tile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.tile.on{background:var(--pri-soft);border-color:var(--pri);box-shadow:0 3px 0 var(--pri)}
+.tile.okc{background:var(--ok-soft);border-color:var(--ok);box-shadow:0 3px 0 var(--ok)}.tile.badc{background:var(--bad-soft);border-color:var(--bad);box-shadow:0 3px 0 var(--bad)}
+
+/* feedback */
+#fb{margin-top:16px;border-radius:20px;padding:18px 20px 20px;border:1.5px solid var(--line);animation:rise .28s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+#fb.ok{background:var(--ok-soft);border-color:var(--ok)}
+#fb.bad{background:var(--bad-soft);border-color:var(--bad)}
+#fb.warn{background:var(--warn-soft);border-color:var(--warn)}
+.fb-h{display:flex;align-items:center;gap:10px;font-weight:750;font-size:23px;margin-bottom:10px}
+#fb.ok .fb-h{color:var(--ok)}#fb.bad .fb-h{color:var(--bad)}#fb.warn .fb-h{color:var(--warn)}
+.fb-h svg{width:27px;height:27px}
+.full{display:flex;gap:12px;align-items:flex-start;margin:8px 0}
+.full p{margin:4px 0;font-family:var(--serif);font-size:23px;line-height:1.55}
+#fb p.exp{margin:10px 0;font-size:18.5px}
+.again{font-size:15.5px;color:var(--ink2)}
+.vocab{margin-top:12px;padding-top:12px;border-top:1px dashed color-mix(in srgb,currentColor 25%,transparent)}
+.vocab>b{font-size:17px}
+.vocab ul,.exl{list-style:none;margin:8px 0 0;padding:0}
+.vocab li,.exl li{display:flex;gap:10px;align-items:flex-start;margin:8px 0;font-size:17.5px}
+.exl .el{display:flex;align-items:flex-start;gap:8px;margin-top:6px}
+.exl .el i{flex:1;font-family:var(--serif);color:var(--ink2);font-size:18.5px;line-height:1.5}
+.nxc{margin-left:auto;padding:12px 30px!important;animation:rise .25s ease-out}
+.exl li{display:block;margin:0;padding:10px 0;border-top:1px dashed color-mix(in srgb,currentColor 22%,transparent)}
+.exl li:first-child{border-top:0;padding-top:2px}
+.exl .eh{display:flex;align-items:center;gap:8px}
+.exl .eh b{font-size:19px}
+.exl .em{margin-top:1px}
+.exl .tx{flex:1}
+.exl .btns{display:flex;gap:4px;flex:none}
+
+/* summary */
+.sum-h{font-family:var(--serif);font-size:clamp(26px,3.2vw,38px);line-height:1.25;margin:0 0 4px;letter-spacing:-.01em}
+.sumtop{display:flex;align-items:center;gap:30px;margin-bottom:18px}
+.sumtxt{flex:1;min-width:0}
+.ring{position:relative;width:156px;height:156px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:11;stroke-linecap:round}
+.ring .tr{stroke:var(--line)}
+.ring .pg{stroke:var(--rc);stroke-dasharray:326.7;animation:ringin .9s ease-out}
+@keyframes ringin{from{stroke-dashoffset:326.7}}
+.dots{display:flex;flex-wrap:wrap;gap:5px;margin:14px 0}
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--bad)}.dots i.ok{background:var(--ok)}
+.big-pct{position:absolute;inset:0;display:grid;place-items:center;font:700 36px var(--serif);color:var(--ink);letter-spacing:-.01em}
+.tagrow{display:grid;grid-template-columns:150px 1fr 60px;gap:14px;align-items:center;font-size:17px;margin:9px 0}
+.meter{height:8px;border-radius:99px;background:var(--line);overflow:hidden}.meter i{display:block;height:100%;background:var(--pri)}
+.wl{list-style:none;padding:0;margin:0}
+.wl li:first-child{border-top:0;padding-top:0}
+.wl li:last-child{padding-bottom:0}
+.wl li{padding:12px 0;border-top:1px solid var(--line);display:flex;gap:12px;align-items:flex-start;font-size:17.5px}
+.wl .tx{flex:1;min-width:0}.wl small{display:block;color:var(--ink2);margin-top:2px}
+.muted{color:var(--ink2);font-size:16.5px}
+@media (max-width:520px){
+  #app{padding:12px 12px 80px}
+  .sheet{padding:20px;border-radius:20px}
+  .prompt{font-size:22px}
+  .tagrow{grid-template-columns:88px 1fr 46px}
+  .mcols{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);column-gap:30px}.mi{font-size:15px;padding:10px 12px;min-height:54px}#mr .mi,.mi.done,#mr .mi.done{padding-left:12px}.mi.done::before{display:none}#ml .say{display:none}
+  .stage .sm .mini-meter{display:none}
+  .say.big{width:52px;height:52px}
+  #app{padding:14px 14px 90px}
+  .story .line{font-size:20px}
+  .sumtop{flex-direction:column;align-items:flex-start;gap:14px}
+  .ring{width:128px;height:128px}.big-pct{font-size:30px}
+  .ctl{flex-wrap:wrap}.ctl .grow{display:none}
+  .ctl .btn:not(.primary){flex:1 1 140px;justify-content:center;padding:11px 8px;min-width:0;white-space:nowrap;font-size:15.5px;gap:6px}
+  .ctl .btn.primary{flex:1 1 100%}
+  .hero-actions .btn{flex:1 1 100%}
+}
+@media (max-width:1000px){#fb .btn.wide{position:sticky;bottom:12px;z-index:5;box-shadow:0 8px 24px -6px rgba(16,23,51,.45)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>JavaScript is required to run this worksheet.</noscript>
+
+<script id="data">
+const STAGES=[
+ {id:'meaning',title:'Meanings',sub:'Match phrases to definitions'},
+ {id:'context',title:'In context',sub:'Short real-life scenes: choose the right phrase'},
+ {id:'produce',title:'Type it',sub:'Fill the gap from memory, with no options'},
+ {id:'story',title:'Conversations and stories',sub:'Complete a dialogue or a short text'},
+ {id:'grammar',title:'Structures',sub:'Reorder, spot the error, choose the structure'},
+ {id:'exam',title:'Exam practice',sub:'The original 36 questions, with explanations'}
+];
+const BANK=[];
+const add=o=>{BANK.push(o)};
+const mt=(id,tag,title,pairs)=>add({id,stage:'meaning',type:'match',tag,title,pairs});
+const mc=(id,stage,tag,prompt,opts,explain,vocab)=>add({id,stage,type:'mcq',tag,prompt,options:opts,answer:0,explain,vocab:vocab||[]});
+const ex=(id,tag,prompt,opts,ans,explain,vocab)=>add({id,stage:'exam',type:'mcq',tag,prompt,options:opts,answer:ans,fixed:true,explain,vocab:vocab||[]});
+const sp=(id,prompt,opts,ans,explain)=>add({id,stage:'grammar',type:'mcq',tag:'Grammar',instr:'Find the part that contains the mistake',prompt,options:opts,answer:ans,fixed:true,explain,vocab:[]});
+const ty=(id,tag,prompt,answers,clue,explain,vocab)=>add({id,stage:'produce',type:'type',tag,prompt,answers,clue,explain,vocab:vocab||[]});
+const cl=(id,tag,title,text,answers,bank,explain,caps)=>add({id,stage:'story',type:'cloze',tag,title,text,answers,bank,explain,vocab:[],caps:caps||[]});
+const ro=(id,answer,explain,alts)=>add({id,stage:'grammar',type:'reorder',tag:'Grammar',answer,alts:alts||[],explain,vocab:[]});
+
+/* ===== STAGE 1: MEANINGS ===== */
+mt('m1','Idiom','Idioms, set 1',[
+ ['sour grapes','pretending something is not worth having because you failed to get it',"Tom said the prize was rigged only after he lost. That's pure sour grapes."],
+ ["one's cup of tea",'something you like or enjoy (usually used in the negative)',"Heavy metal isn't really my cup of tea."],
+ ['have green fingers','be very good at growing plants','Grandma has green fingers. Her roses win prizes every year.'],
+ ['full of beans','full of energy and enthusiasm',"After a good night's sleep, the kids were full of beans."],
+ ['a jack of all trades','someone who can do many jobs but is not an expert at any of them','He is a jack of all trades and master of none.']]);
+mt('m2','Idiom','Idioms, set 2',[
+ ["breathe down one's neck",'watch someone too closely and put pressure on them','My boss keeps breathing down my neck about the deadline.'],
+ ['on the straight and narrow','living honestly and obeying the law','After his release, he stayed on the straight and narrow.'],
+ ['on the rocks','(of a relationship or business) in serious trouble and likely to fail','Their partnership has been on the rocks since the lawsuit.'],
+ ['strike a happy medium','find a fair balance between two extremes','Try to strike a happy medium between saving and spending.'],
+ ["of one's own accord",'willingly, without being forced or asked','The dog came back of its own accord.']]);
+mt('m3','Idiom','Idioms, set 3',[
+ ['fair and square','honestly and according to the rules','We won the match fair and square.'],
+ ['safe and sound','unharmed; not hurt or damaged','The missing kitten was found safe and sound.'],
+ ['part and parcel (of sth)','an essential part of something','Early mornings are part and parcel of farm life.'],
+ ['out of character','not typical of how someone usually behaves','Shouting at a customer is out of character for Mai.'],
+ ['not in the least','not at all',"“Am I disturbing you?” “Not in the least.”"]]);
+mt('m4','Collocation','Collocations, set 1',[
+ ['exert pressure on sb','try to influence someone by pushing them strongly','Voters exerted pressure on the council to act.'],
+ ['take measures','do things officially to deal with a problem','The city took measures to cut air pollution.'],
+ ['break the silence','be the first to speak or make a sound after a quiet period',"A baby's cry broke the silence."],
+ ["stretch one's legs",'walk around after sitting for a long time','We stopped at a café to stretch our legs.'],
+ ['a glow of satisfaction','a warm, happy look that shows you are pleased','A glow of satisfaction spread over her face.']]);
+mt('m5','Collocation','Collocations, set 2',[
+ ['hold a fascination for sb','be very interesting and attractive to someone','Space has always held a fascination for children.'],
+ ['supremely confident','extremely sure of yourself','The champion looked supremely confident before the final.'],
+ ['be inextricably linked','be connected so closely that they cannot be separated','Health and diet are inextricably linked.'],
+ ['commit a crime','do something illegal','He denied that he had committed any crime.'],
+ ["screw up one's face",'twist your face because you dislike something','She screwed up her face at the smell.']]);
+mt('m6','Phrasal verb','Phrasal verbs',[
+ ['bring up (a topic)','mention a subject for the first time in a conversation',"Please don't bring up the exam results at dinner."],
+ ['mount up','gradually increase in amount','Small expenses mount up quickly.'],
+ ['clock up','reach or achieve a total (miles, hours, points)','Pilots clock up thousands of flying hours.'],
+ ['cross out','draw a line through something written','Cross out any answers you think are wrong.'],
+ ['lie behind sth','be the hidden cause or reason for something','What lies behind his sudden silence?']]);
+mt('m7','Vocabulary','Easily confused verbs',[
+ ['acquit sb (of sth)','decide officially in court that someone is not guilty','The jury acquitted her of all charges.'],
+ ['liberate','set free (a person, a place or a people)','The army liberated the city in 1945.'],
+ ['intern','imprison someone, usually in wartime, without a trial','Enemy nationals were interned during the war.'],
+ ['exert','use strength, influence or pressure','Social media can exert a strong influence on teenagers.'],
+ ['deploy','move troops or resources into position for action','The government deployed extra police at the stadium.']]);
+mt('m8','Vocabulary','Words and prepositions',[
+ ['comprise','consist of; be made up of','The team comprises ten engineers.'],
+ ['be bent on doing sth','be determined to do something','He is bent on becoming a pilot.'],
+ ['be inclined to do sth','tend to do something; feel likely to do it',"I'm inclined to accept the offer."],
+ ['unappealing','not attractive or pleasant','The menu looked unappealing.'],
+ ['nutritious','containing substances that help you stay healthy and grow','Beans are cheap and nutritious.']]);
+mt('m9','Linkers','Linking words',[
+ ['whereas','used to compare two facts that are different','Cats sleep all day, whereas dogs need walks.'],
+ ['considering that','taking into account the fact that',"Considering that he's new, he's doing great."],
+ ['nevertheless','in spite of that','It rained; nevertheless, we went out.'],
+ ['likewise','in the same way','Mai donated books. Likewise, her brother gave clothes.'],
+ ['consequently','as a result','Sales fell; consequently, prices were cut.']]);
+
+mc('r1','meaning','Idiom','Which idiom describes **criticising something because you failed to get it**?',['sour grapes','green fingers','full of beans',"one's cup of tea"],'**Sour grapes** comes from the fable of the fox who could not reach the grapes and then said they were sour.',['sour grapes — criticising something because you failed to get it']);
+mc('r2','meaning','Idiom',"Which expression means **to watch someone so closely that they feel pressure**?",["breathe down one's neck",'strike a happy medium',"stretch one's legs",'break the silence'],"Picture someone standing right behind you, breathing on your neck: **breathe down someone's neck**.",["breathe down one's neck — watch someone too closely"]);
+mc('r3','meaning','Idiom',"What does **“part and parcel of sth”** mean?",['an essential part of something','unharmed and safe','honestly and fairly','a package sent by post'],"*Stress is part and parcel of this job* means stress cannot be separated from the job.",['part and parcel of sth — an essential part of something']);
+mc('r4','meaning','Vocabulary',"What does **acquit** mean?",['declare officially that someone is not guilty','set someone free','imprison someone without a trial','forgive someone for something'],"To acquit is to find a defendant **not guilty**. Don't confuse it with *liberate* (set free) or *intern* (imprison without trial).",['acquit — declare officially that someone is not guilty','liberate — set free','intern — imprison without a trial']);
+mc('r5','meaning','Idiom',"“It was **out of character** for him to shout.” What does this mean?",['Shouting is not typical of him','Shouting was beyond his ability','He shouted on purpose','He often shouts'],"**Out of character** = not like the person's usual behaviour.",['out of character — not typical of someone']);
+mc('r6','meaning','Collocation',"What does **“stretch one's legs”** mean?",['walk around after sitting for a long time','run very fast','do yoga','make a trip longer'],"Use it after a long journey, meeting or flight.",["stretch one's legs — walk around after sitting for a long time"]);
+mc('r7','meaning','Phrasal verb',"In “Nobody wanted to **bring up** the sensitive topic”, what does *bring up* mean?",['mention','raise a child','tolerate','gradually increase'],"With a topic, issue or subject, **bring up** = raise it for discussion. With a child it means *raise*.",['bring up sth — mention a topic','bring sb up — raise a child','put up with — tolerate']);
+mc('r8','meaning','Idiom',"“Their marriage is **on the rocks**.” What state is it in?",['in serious trouble and likely to end','going very smoothly','living honestly','full of energy'],"Like a ship about to hit the rocks, the relationship is close to failure.",['on the rocks — close to failure']);
+
+/* ===== STAGE 2: IN CONTEXT ===== */
+mc('c1','context','Idiom',"Tom lost the debate contest. The next day he told everyone that debating is for nerds anyway. His sister rolled her eyes: “That's just ____. You wanted to win badly.”",['sour grapes','green fingers','full of beans','a cup of tea'],"Tom criticises something only because he failed to win it. That is **sour grapes**.",['sour grapes — criticising something because you failed to get it']);
+mc('c2','context','Idiom',"My neighbour's balcony is a mini jungle: tomatoes, herbs, even orchids. Everything she touches grows. She really has ____.",['green fingers','sour grapes','a jack of all trades','full of beans'],"Everything she grows thrives, so she has **green fingers**. (American English: *a green thumb*.) There is no “a” before *green fingers*.",['have green fingers — be very good at gardening']);
+mc('c3','context','Idiom',"Everyone loves the new horror movie, but I couldn't even finish it. Scary films just aren't my ____.",['cup of tea','green fingers','sour grapes','full of beans'],"**(not) my cup of tea** means (not) something I enjoy. It is usually used in the negative.",["one's cup of tea — something you like"]);
+mc('c4','context','Idiom',"The twins had a huge sugary breakfast and are now racing around the living room. They are absolutely ____.",['full of beans','sour grapes','on the rocks','safe and sound'],"Racing around with lots of energy = **full of beans**.",['full of beans — full of energy']);
+mc('c5','context','Idiom',"Mum texts me three times a day to ask if I've started my homework. I can't concentrate with her breathing down my ____.",['neck','back','shoulder','ear'],"It is a fixed idiom: **breathe down someone's neck**.",["breathe down one's neck — watch someone too closely"]);
+mc('c6','context','Idiom',"Linh and Duc argued about money for months. They barely talk now, and friends say their friendship is ____.",['on the rocks','safe and sound','fair and square','part and parcel'],"A relationship close to collapse is **on the rocks**.",['on the rocks — close to failure']);
+mc('c8','context','Idiom',"Two hikers vanished in the fog and the whole village feared the worst. Two days later, rescuers found them ____.",['safe and sound','fair and square','on the rocks','part and parcel'],"Found unharmed = **safe and sound**.",['safe and sound — unharmed']);
+mc('c9','context','Idiom',"Nurses often work night shifts, miss holidays and skip meals. Honestly, that's ____ of the job.",['part and parcel','safe and sound','fair and square','on the rocks'],"**part and parcel of sth** = an essential part of it.",['part and parcel of sth — an essential part of something']);
+mc('c10','context','Idiom',"Samira always arrives ten minutes early. So when she turned up two hours late without even calling, it was completely out of ____.",['character','habit','nature','custom'],"Behaviour that is not typical of someone is **out of character**.",['out of character — not typical of someone']);
+mc('c12','context','Collocation',"We had been sitting on the coach for four hours, so when the driver announced a ten-minute break, everyone got off to ____ their legs.",['stretch','extend','lengthen','span'],"The collocation is **stretch one's legs**.",["stretch one's legs — walk around after sitting for a long time"]);
+mc('c14','context','Phrasal verb',"The meeting was going smoothly until Ken ____ the sensitive issue of bonuses, and the room went quiet.",['brought up','put up','mounted up','clocked up'],"**bring up an issue** = raise it for discussion. *Put up with* means *tolerate*.",['bring up sth — mention a topic']);
+mc('c15','context','Phrasal verb',"Han is a delivery driver. In just three months he has ____ 12,000 km on his old motorbike.",['clocked up','mounted up','brought up','crossed out'],"**clock up** takes a number as its object (km, hours, points). *Mount up* has no object: *Costs mounted up.*",['clock up — reach a total (miles, hours, points)','mount up — gradually increase']);
+mc('c17','context','Vocabulary',"After a three-week trial, the court ____ the former mayor of all corruption charges.",['acquitted','liberated','interned','excused'],"The court declared him not guilty: **acquit sb of sth**.",['acquit — declare officially that someone is not guilty']);
+mc('c18','context','Vocabulary',"During the war, thousands of foreign nationals were ____ in camps, even though they had committed no crime.",['interned','acquitted','liberated','excused'],"**Intern** = imprison, usually in wartime, without a trial.",['intern — imprison without a trial']);
+mc('c20','context','Vocabulary',"Because of the flood, the city will ____ 2,000 rescue workers and 50 boats to the worst-hit districts.",['deploy','exert','administer','comprise'],"**Deploy** = send people or equipment where they are needed.",['deploy — move resources into position for use']);
+mc('c21','context','Linkers',"Chicken rice sells out by noon in our canteen, ____ the vegetable soup is hardly touched.",['whereas','unlike','therefore','however'],"**whereas** joins two contrasting clauses in the middle of a sentence. *Unlike* is a preposition (it needs a noun); *however* and *therefore* need a full stop or semicolon before them.",['A, whereas B — two contrasting situations']);
+mc('c22','context','Linkers',"The team trained hard for six months. ____, they lost in the first round.",['Nevertheless','Consequently','Likewise','Furthermore'],"The result is the opposite of what we expect, so we need **Nevertheless** (in spite of that).",['nevertheless — in spite of that']);
+mc('c23','context','Linkers',"Heavy rain flooded the main road for hours. ____, all buses were rerouted.",['Consequently','Nevertheless','Likewise','Whereas'],"Cause then result: **Consequently** (as a result).",['consequently — as a result']);
+mc('c24','context','Linkers',"____ how little time they had to prepare, the students gave an impressive presentation.",['Considering','Bringing','Accounting','Shining'],"**Considering (that)…** = taking into account… It can be followed by *how* + adjective or adverb.",['considering that + clause — taking into account the fact that']);
+mc('c26','context','Idiom',"After two years in prison, Ben is determined to stay on the ____ and find an honest job.",['straight and narrow','fair and square','safe and sound','part and parcel'],"**on the straight and narrow** = living honestly and legally.",['on the straight and narrow — living honestly and legally']);
+mc('c30','context','Vocabulary',"The Wi-Fi in this café is so slow that I'm ____ to give up and go home.",['inclined','bent','obsessed','fascinated'],"Only **inclined** fits with *to give up*. *Bent* needs *on*, *obsessed* needs *with*, and *fascinated* needs *by*.",['be inclined to do sth — tend to do something']);
+mc('c31','context','Vocabulary',"Despite everyone's warnings about the storm, Minh was ____ on sailing that night.",['bent','inclined','predisposed','obsessed'],"Only **bent** goes with *on*: *be bent on doing sth* = be determined to do it.",['be bent on doing sth — be determined to do something']);
+mc('c33','context','Vocabulary',"Plain porridge may look ____, but it is cheap and nutritious.",['unappealing','unreliable','unavoidable','unanimous'],"**Unappealing** means not attractive. The other words mean *not trustworthy*, *impossible to avoid* and *fully agreed*.",['unappealing — not attractive','nutritious — containing substances that keep you healthy']);
+mc('c34','context','Collocation',"In Vietnam, Tet and family reunions are so ____ linked that celebrating alone feels strange.",['inextricably','inevitably','indubitably','indomitably'],"**inextricably linked** = connected so closely that they cannot be separated.",['be inextricably linked — connected so closely they cannot be separated']);
+
+/* ===== STAGE 3: TYPE IT ===== */
+ty('t1','Idiom',"When Mai failed to get the lead role, she said the play was boring anyway. Her friends just smiled. It was classic ____.",['sour grapes'],'criticising something you failed to get',"Criticising something you failed to get is **sour grapes**.");
+ty('t2','Idiom',"Horror films are really not my ____.",['cup of tea'],'something you enjoy',"**not my cup of tea** = not something I enjoy.");
+ty('t3','Idiom',"My grandmother has ____. Everything she plants grows!",['green fingers','green thumb'],'very good at gardening',"**have green fingers** (British English), without “a”. American English says *a green thumb*.");
+ty('t4','Idiom',"After the long holiday, the kids were ____ and wouldn't sit still.",['full of beans'],'full of energy',"**full of beans** = full of energy.");
+ty('t5','Idiom',"Their marriage has been on the ____ for years.",['rocks'],'in serious trouble',"**on the rocks** = close to failure.");
+ty('t6','Idiom',"Mr. Hung can fix cars, bake bread and play the piano, but he is a jack of all ____ and master of none.",['trades'],'plural noun meaning jobs or skills',"**a jack of all trades and master of none**: many skills, expert at none.");
+ty('t7','Idiom',"Please stop breathing down my ____ while I write the report!",['neck'],'a part of the body',"**breathe down one's neck** = watch someone too closely.");
+ty('t8','Idiom',"Between work and family, it's hard to strike a happy ____.",['medium'],'a balance',"**strike a happy medium between A and B** = find a fair balance.");
+ty('t9','Idiom',"Nobody forced him to join the clean-up. He signed up of his own ____.",['accord'],'willingly',"**of one's own accord** = willingly. (Not *of one's own will*.)");
+ty('t10','Idiom',"Insulting a guest is completely out of ____ for Anna; she is usually so polite.",['character'],'a person\'s usual personality',"**out of character** = not typical of how someone usually behaves.");
+ty('t11','Idiom',"Writing reports is just part and ____ of my job.",['parcel'],'an essential part',"**part and parcel of sth** = an essential part of it.");
+ty('t12','Idiom',"Since leaving prison, he has stayed on the straight and ____.",['narrow'],'honest and law-abiding',"**on the straight and narrow** = living honestly and legally.");
+ty('t13','Collocation',"Teachers should not ____ too much pressure on students to get top marks.",['exert'],'put (pressure) on someone',"**exert pressure on sb** = try hard to influence someone.");
+ty('t14','Collocation',"Strict measures have been ____ to reduce plastic waste.",['taken'],'past participle of take',"**take measures**; passive: *measures have been taken*.");
+ty('t15','Collocation',"The comedian's first joke finally ____ the awkward silence.",['broke'],'past tense of break',"**break the silence**; the past tense of *break* is *broke*.");
+ty('t16','Collocation',"Poverty and poor health are ____ linked.",['inextricably'],'adverb: impossible to separate',"**inextricably linked** = connected so closely they cannot be separated.");
+ty('t17','Idiom',"When the little girl tasted the bitter melon soup, she screwed up her ____.",['face'],'twist it in disgust',"**screw up one's face** = twist your face in disgust.");
+ty('t18','Linkers',"Some people love city life, ____ others prefer the countryside.",['whereas','while'],'contrast linker',"**A, whereas/while B** contrasts two situations.");
+ty('t19','Grammar',"Had she ____ (know) about the delay, she would have left earlier.",['known'],'past participle',"Third conditional with inversion: **Had + subject + past participle**, subject + would have + past participle.");
+ty('t20','Grammar',"We would sooner you ____ (tell) us the truth yesterday.",['had told'],'past perfect',"**would sooner + subject + had + past participle** = regret about the past.");
+
+/* ===== STAGE 4: CONVERSATIONS AND STORIES ===== */
+cl('d1','Conversation','Conversation: at the office',
+"Lan: Sorry for the long email. I hope it wasn't too confusing.\nTuan: {1}! It was perfectly clear.\nLan: Great. I'll also bring a printed copy tomorrow, {2}.\nTuan: Good thinking. The projector often breaks down.\nLan: One more thing. We must finish this report by Friday {3}.",
+['not in the least','just in case','at all costs'],['not in the least','just in case','at all costs',"you're welcome"],
+"**Not in the least** = not at all. **Just in case** = as a precaution. **At all costs** = whatever it takes.",[1]);
+cl('d2','Idiom','Story: the audition',
+"After weeks of practice, Minh failed the audition for the school musical. He told everyone the show was boring anyway, but his friends knew it was just {1}.\nA month later, his best friend gently {2} the subject, and Minh finally admitted he was hurt.\n“Honestly, I'm not surprised,” she said. “Being so negative is completely out of {3} for you.”",
+['sour grapes','brought up','character'],['sour grapes','brought up','character','green fingers','clocked up'],
+"**sour grapes** (criticising what you couldn't get), **brought up the subject** (raised it), **out of character** (not typical).",[]);
+cl('d3','Idiom','Conversation: job interview',
+"Interviewer: Why did you leave your last job?\nCandidate: My supervisor was constantly breathing down my {1}, so I couldn't work efficiently.\nInterviewer: How do you balance work and life now?\nCandidate: I try to strike a {2} between the two. Weekdays are for work, weekends for family.\nInterviewer: You seem {3} confident about your skills.\nCandidate: I've {4} over 3,000 hours of volunteer work, so I think I can handle the pressure.",
+['neck','happy medium','supremely','clocked up'],['neck','happy medium','supremely','clocked up','shoulder','exert'],
+"Four phrases for talking about work: **breathe down one's neck**, **strike a happy medium**, **supremely confident**, **clock up** (hours).",[]);
+cl('d4','Idiom',"Story: Grandma's garden",
+"My grandmother has {1}: her small garden in Da Lat grows more vegetables than the local market sells. Gardening is not everyone's {2}, but she says it keeps her {3} even at 80. For her, watering the plants every morning is {4} of daily life.",
+['green fingers','cup of tea','full of beans','part and parcel'],['green fingers','cup of tea','full of beans','part and parcel','sour grapes','safe and sound'],
+"**have green fingers**, **not everyone's cup of tea**, **full of beans**, **part and parcel of**: four idioms about hobbies and energy.",[]);
+cl('d5','Idiom','Conversation: the missing hikers',
+"Hoa: Did the rescue team find the two hikers?\nBinh: Yes! After two nights on the mountain, they were found {1}.\nHoa: Thank goodness. Weren't they warned about the storm?\nBinh: Repeatedly. But they seemed {2} on reaching the summit.\nHoa: Will the park do anything about it?\nBinh: The rangers say they'll {3} stricter safety measures from next month.",
+['safe and sound','bent','take'],['safe and sound','bent','take','obsessed','make','fair and square'],
+"**safe and sound**, **be bent on doing sth** (not *obsessed on*), **take measures** (not *make measures*).",[]);
+cl('d6','Linkers','Story: the school canteen',
+"In our school canteen, chicken rice sells out by noon, {1} the vegetable soup is rarely finished. The manager put up colourful posters for the soup. {2}, hardly any students bought it. {3} that the soup is cheap and healthy, he decided to keep it on the menu. Parents liked the idea too. {4}, the soup stayed on the menu.",
+['whereas','nevertheless','considering','consequently'],['whereas','nevertheless','considering','consequently','likewise','unlike'],
+"**whereas** (contrast), **Nevertheless** (in spite of that), **Considering that** (taking into account), **Consequently** (as a result).",[2,3,4]);
+cl('d7','Grammar','Conversation: the surprise party that wasn\'t',
+"Linh: Oliver walked in and said “Wow, a party!” as if he already knew.\nHa: Someone {1} him. Nobody else knew the date.\nMinh: It wasn't me! I {2} him. I was out of town all week.\nHa: Then it was Tuan. He {3} Oliver. It was meant to be a surprise!",
+['must have told',"couldn't have told","shouldn't have told"],['must have told',"couldn't have told","shouldn't have told","mustn't have told",'should have told'],
+"**must have + past participle** = I'm sure it happened. **couldn't have** = I'm sure it didn't. **shouldn't have** = it was wrong to do it.",[]);
+
+/* ===== STAGE 5: STRUCTURES ===== */
+ro('g1','Never before had Lan seen so beautiful a sunset.',"Inversion after **Never before** (had + subject + past participle), plus **so + adjective + a/an + noun**.");
+ro('g2','Unappealing as the soup looked, it tasted wonderful.',"**Adjective + as + subject + verb** = although.",['It tasted wonderful, unappealing as the soup looked.']);
+ro('g3','Had I known about the traffic, I would have taken the train.',"Third conditional with inversion: **Had + subject + past participle**, subject + would have + past participle.",['I would have taken the train had I known about the traffic.']);
+ro('g4','Behind his calm face lay years of fear.',"Inversion after a place phrase: **Behind… + verb + subject** (the subject *years* is plural).");
+ro('g5','The average height of men is greater than that of women.',"Compare like with like with **that of / those of** instead of repeating the noun.");
+ro('g6','Why does the club object to her joining the team?',"**object to + (possessive) V-ing**. *To* is a preposition, so use *her joining*.");
+ro('g7','Much as I love chocolate, I never eat it before bed.',"**Much as + subject + verb** = although (very much).",['I never eat it before bed, much as I love chocolate.']);
+ro('g8','We would sooner you had told us the truth earlier.',"**would sooner + subject + had + past participle** = regret about the past.");
+
+sp('s1',"Never before [A: I have seen] [B: such a spectacular] [C: show] [D: in my life].",['I have seen','such a spectacular','show','in my life'],0,"After **Never before**, put the auxiliary before the subject: *Never before have I seen…*");
+sp('s2',"Daniel [A: assumes] [B: that the train] [C: has already left,] [D: hasn't it]?",['assumes','that the train','has already left,',"hasn't it"],3,"The main clause is *Daniel assumes* (third person), so the tag is **doesn't he?** Only with *I* does the tag follow the second clause (*I assume the train has left, hasn't it?*).");
+sp('s3',"The [A: average lifespan] [B: of dogs is] [C: shorter than] [D: the one of humans].",['average lifespan','of dogs is','shorter than','the one of humans'],3,"Compare like with like: **that of humans**, not *the one of humans*.");
+sp('s4',"She [A: was bent] [B: on to win] [C: the competition] [D: at all costs].",['was bent','on to win','the competition','at all costs'],1,"**be bent on + V-ing** gives *bent on winning*.");
+sp('s5',"Why does the manager object to [A: she] [B: being appointed] [C: as the new head] [D: of the department]?",['she','being appointed','as the new head','of the department'],0,"After the preposition *to* in **object to**, use a possessive or object form: *her being appointed*.");
+sp('s6',"Several messages [A: writing] [B: in invisible ink] [C: were found] [D: in the old diary].",['writing','in invisible ink','were found','in the old diary'],0,"A reduced passive relative clause uses the past participle: *messages **written** in invisible ink*.");
+sp('s7',"We [A: would sooner] [B: the organisers] [C: would have informed] [D: us earlier].",['would sooner','the organisers','would have informed','us earlier'],2,"**would sooner + subject + had + past participle**: *the organisers **had informed** us*.");
+sp('s8',"Behind her cheerful smile [A: lies] [B: years of] [C: disappointment and] [D: frustration].",['lies','years of','disappointment and','frustration'],0,"In inversion the verb agrees with the subject that comes after it: *years* is plural, so **lie**.");
+sp('s9',"[A: Had we] [B: known] [C: about the delay,] we [D: would left] earlier.",['Had we','known','about the delay,','would left'],3,"Third conditional: **would have left**.");
+
+mc('n1','grammar','Grammar',"Rarely ____ such a generous donation.",['have we received','we have received','did we received','we received'],"Negative adverbs (*rarely, never, seldom*) at the start of a clause force inversion: **have we received**.");
+mc('n2','grammar','Grammar',"Never before ____ such a heavy storm in this region.",['had the residents experienced','the residents had experienced','did the residents experienced','have the residents experience'],"**Never before + had + subject + past participle** (an event before a past moment).");
+mc('n3','grammar','Grammar',"____ the technician arrived earlier, the food wouldn't have spoiled.",['Had','If had','Unless had','Were'],"Third conditional with inversion: **Had + subject + past participle**, never *If had*.");
+mc('n4','grammar','Grammar',"The population of Hanoi is larger than ____ of Da Nang.",['that','those','it','which'],"To refer back to a singular noun, use **that of…** (plural: *those of*).");
+mc('n5','grammar','Grammar',"My parents don't object ____ abroad.",['to my studying','to me study','for me studying','to I studying'],"**object to + (possessive) V-ing**: *to my studying*.");
+mc('n6','grammar','Grammar',"Several photos ____ during the trip were blurry.",['taken','taking','were taken','take'],"Reduced passive relative clause: *photos (which were) taken…*");
+mc('n7','grammar','Grammar',"She believes the film starts at nine, ____?",["doesn't she",'does she',"doesn't it","isn't it"],"The subject of the main clause is **she**, so the tag follows it: *doesn't she?*");
+mc('n8','grammar','Grammar',"I think the museum opens at eight, ____?",["doesn't it","don't I",'do I',"isn't it"],"With **I think/believe/assume**, the tag follows the second clause: *doesn't it?*");
+mc('n9','grammar','Grammar',"I'd sooner you ____ the window now. It's freezing in here.",['closed','had closed','would have closed','closing'],"**would sooner + subject + past simple** (present or future); **+ had + past participle** (past). This is about now, so *closed*.");
+mc('n10','grammar','Grammar',"____ hard he tried, he couldn't open the jar.",['However','No matter','Although','Despite'],"**However + adjective/adverb + subject + verb** (or *No matter how…*). *No matter* needs *how*.");
+mc('n11','grammar','Grammar',"____ I like jazz, I can't listen to it all day.",['Much as','Even as','Despite','As much'],"**Much as + subject + verb** = although (very much).");
+
+/* ===== STAGE 6: EXAM PRACTICE ===== */
+ex('e1','Idiom',"After failing the audition, Nina claimed that the play was not worth joining anyway. Her friends suspected that this was merely ____.",['a cup of tea','green fingers','full of beans','sour grapes'],3,"Nina failed the audition and then said the play wasn't worth joining. Criticising something you couldn't get is **sour grapes**.",['sour grapes — pretending something is not worth having because you failed to get it',"one's cup of tea — something you like",'have green fingers — be good at gardening','full of beans — full of energy','audition — a short performance to test an actor or singer','be worth doing sth — be good enough to be worth the effort']);
+ex('e2','Grammar',"Never before had the critic watched ____ from a first-time director.",['such impressive film','so impressive a film','so impressive film','such impressive a film'],1,"After *Never before* the auxiliary comes first (*had the critic watched*). Pattern: **such a(n) + adj + N = so + adj + a(n) + N**, so *so impressive a film*.",['critic — a person who judges films, books or plays','such a(n) + adj + N = so + adj + a(n) + N']);
+ex('e3','Vocabulary',"After new DNA evidence established that he could not have committed the crime, the prisoner was formally ____.",['liberated','acquitted','interned','excused'],1,"DNA evidence shows he is innocent, so the court formally declares him not guilty: **acquitted**.",['commit a crime — do something illegal','acquit — declare officially that someone is not guilty','liberate — set free','intern — imprison, usually in wartime, without a trial','excuse sb for doing sth — forgive someone for doing something']);
+ex('e4','Conversation',"Nam is talking to his tutor after giving a presentation.\nNam: “I hope all those technical details weren’t too confusing.”\nTutor: “____. Your explanation was remarkably clear.”",['Not in the least','Just in case','You’re welcome','At all costs'],0,"Nam worries the details were confusing. “**Not in the least**” means “not at all”.",['technical — connected with practical or scientific methods','remarkably — in a surprising or impressive way','not in the least — not at all','just in case — as a precaution','at all costs — whatever it takes']);
+ex('e5','Grammar',"Daniel assumes that the train has already left, ____?",['doesn’t he','does he','hasn’t it','has it'],0,"The main clause is *Daniel assumes* (third person), so the tag follows the main clause: **doesn't he?** Only with *I* (*I assume…*) does the tag follow the second clause.");
+ex('e6','Idiom',"Marcus can repair computers, paint houses and design websites, but he is not truly skilled in any of them. He is a jack ____ and master of none.",['for all trades','of all tracks','of all trades','for all jobs'],2,"It is a fixed idiom: **a jack of all trades and master of none**.",['a jack of all trades and master of none — someone who can do many things but is not an expert in any']);
+ex('e7','Idiom',"I cannot work efficiently with my supervisor constantly breathing down my ____.",['shoulder','neck','mouth','heart'],1,"**breathe down someone's neck** = watch someone too closely.",['efficiently — in a way that wastes little time or effort','supervisor — a person who watches over workers','constantly — all the time',"breathe down one's neck — watch someone too closely"]);
+ex('e8','Collocation',"Despite facing several experienced opponents, the young lawyer remained ____ confident that she would win the case.",['acutely','blissfully','intensely','supremely'],3,"The collocation is **supremely confident**.",['supremely confident — extremely sure of yourself']);
+ex('e9','Linkers',"Every prediction the analyst had made proved inaccurate. ____, the director decided to give him one final opportunity.",['Likewise','Furthermore','Nevertheless','Consequently'],2,"The predictions were wrong, but the director still gave him a chance. That contrast needs **Nevertheless**.",['analyst — a person who studies information carefully','inaccurate — not correct','likewise — in the same way']);
+ex('e10','Collocation',"Abandoned buildings seem to ____ a strange fascination for many urban explorers.",['contain','comprise','weave','hold'],3,"The collocation is **hold a fascination for sb**.",['hold a fascination for sb — be very interesting to someone','comprise — consist of','weave — make cloth by crossing threads']);
+ex('e11','Vocabulary',"Despite repeated warnings from his colleagues, Leo appeared ____ on confronting the director publicly.",['inclined','predisposed','obsessed','bent'],3,"Only **bent** is followed by *on*: **be bent on doing sth** = be determined to do it. The others take different prepositions (*inclined to*, *predisposed to*, *obsessed with*).",['confront — face someone and challenge them','be bent on doing sth — be determined to do something','be inclined to do sth — tend to do something','be predisposed to do sth — have a natural tendency to do something','be obsessed with sth — think about something all the time']);
+ex('e12','Grammar',"Why does the department object to ____ as the new project manager? She has all the necessary qualifications.",['her being appointed','she being appointed','she be appointed','her be appointed'],0,"**object to + (possessive) V-ing**. *To* is a preposition here, so use *her being appointed*.",["object to (one's) doing sth — oppose someone doing something",'appoint — choose someone for a job or position']);
+ex('e13','Collocation',"The peaceful silence of the examination hall was suddenly ____ by the ringing of a mobile phone.",['smashed','broken','crushed','fractured'],1,"The collocation is **break the silence**.",['break the silence — end a quiet moment by making a sound','smash — break violently into pieces','crush — press something until it loses its shape','fracture — crack or break (bones, hard objects)']);
+ex('e14','Grammar',"Behind her cheerful smile ____ years of disappointment and frustration.",['lay','lying','did lie','lain'],0,"Inversion: **prepositional phrase of place + verb + subject**. The subject *years* is plural and the time is past, so *lay*.",['lie behind sth — be the hidden reason for something']);
+ex('e15','Idiom',"Nobody persuaded Lucy to volunteer at the shelter; she did it entirely of her own ____.",['accord','desire','will','idea'],0,"Idiom: **of one's own accord** = willingly. (*Will* only works in *of one's own free will*.)",["of one's own accord — willingly, without being asked"]);
+ex('e16','Grammar',"____, the dish is surprisingly delicious and nutritious.",['With the dish looks unappealing','As unappealing the dish looks','Unappealing as the dish looks','As the dish unappealing looks'],2,"**Adjective/adverb + as + subject + verb** = although. So *Unappealing as the dish looks*.",['nutritious — containing substances that keep you healthy','unappealing — not attractive']);
+ex('e17','Grammar',"We would sooner the organisers ____ us about the cancellation before we travelled all the way there yesterday.",['had informed','would have informed','had been informed','informed'],0,"**would sooner + subject + had + past participle** expresses regret about the past (note *yesterday*).");
+ex('e18','Grammar',"____ that the road would be closed, we would have chosen a different route.",['Had we known','Unless had we known','If had we known','As we had ever known'],0,"Third conditional with inversion: **Had + subject + past participle**, subject + would have + past participle.");
+ex('e19','Grammar',"The average lifespan of some species of whale is considerably longer than ____.",['the one of humans’','that of humans','the humans’','humans'],1,"Compare like with like: the lifespan of whales and **that of humans** (= the lifespan of humans).",['lifespan — the length of time something lives','considerably — by a large amount']);
+ex('e20','Idiom',"It was completely out of ____ for the normally generous businessman to refuse such a modest request.",['temperament','personality','nature','character'],3,"**out of character** = not typical of someone's usual behaviour.",['modest — small in size or amount',"out of character — not typical of someone's usual behaviour"]);
+ex('e21','Collocation',"Several powerful companies are attempting to ____ pressure on the government to change the regulations.",['exert','implement','administer','deploy'],0,"The collocation is **exert pressure on sb**.",['exert pressure on sb — try hard to influence someone','administer — manage or organise','deploy — move resources into position for use']);
+ex('e22','Collocation',"A soft, warm ____ of satisfaction spread across Maria’s face when her name was announced.",['ray','beam','shine','glow'],3,"The collocation is **a glow of satisfaction**.",['a glow of satisfaction — a warm look showing you are pleased']);
+ex('e23','Phrasal verb',"When the interviewer ____ the subject of his previous dismissal, the candidate immediately became uncomfortable.",['mounted up','brought up','clocked up','put up'],1,"**bring up sth** = mention a topic.",['dismissal — losing your job because your employer ends your contract','bring up sth — mention a topic','bring sb up — raise a child','mount up — gradually increase','clock up — reach a total (miles, hours, points)','put up with — tolerate']);
+ex('e24','Idiom',"Since leaving prison, Richard has remained on the ____ and has not been involved in any further trouble.",['fair and square','safe and sound','straight and narrow','part and parcel'],2,"**on the straight and narrow** = living honestly and legally.",['on the straight and narrow — living honestly and legally','fair and square — honestly and by the rules','safe and sound — unharmed','part and parcel of sth — an essential part of something']);
+ex('e25','Idiom',"Their marriage has been on the ____ for months, and they are now considering a divorce.",['fire','rocks','clouds','wave'],1,"**on the rocks** = close to failure.",['on the rocks — close to failure']);
+ex('e26','Idiom',"The child ____ his face in disgust after tasting the bitter medicine.",['crossed out','blew up','blacked out','screwed up'],3,"**screw up one's face** = twist your face in disgust.",["screw up one's face — twist your face in disgust",'cross out — draw a line through','blow up — explode; lose your temper','black out — lose consciousness or electricity']);
+ex('e27','Collocation',"Language is so ____ linked to culture that studying one inevitably provides insights into the other.",['inevitably','inextricably','indubitably','indomitably'],1,"**inextricably linked** = connected so closely that they cannot be separated.",['inevitably — in a way that cannot be avoided','be inextricably linked — connected so closely they cannot be separated','indubitably — without any doubt','indomitably — in a way that cannot be defeated']);
+ex('e28','Grammar',"Displayed in major galleries throughout the world, ____.",['the photographer became famous for his black-and-white portraits','visitors have admired the photographer’s black-and-white portraits','the photographer’s black-and-white portraits have received international acclaim','it was the photographer who created several black-and-white portraits'],2,"The participle phrase *Displayed in major galleries…* must describe the **subject of the main clause**. Only the *portraits* are displayed, not the photographer or the visitors.");
+ex('e29','Grammar',"Several secret messages ____ in invisible ink were discovered inside the old diary.",['wrote','written','were written','be written'],1,"A reduced passive relative clause uses the past participle: *messages (which were) **written** in invisible ink*. *Were discovered* is already the main verb.");
+ex('e30','Collocation',"During the long coach journey, the driver stopped every two hours so that passengers could ____ their legs.",['extend','span','stretch','range'],2,"The collocation is **stretch one's legs**.",["stretch one's legs — walk around after sitting for a long time"]);
+ex('e31','Grammar',"It was meant to be a surprise party! You ____ Oliver about it yesterday.",['shouldn’t have told','mightn’t have told','mustn’t have told','couldn’t have told'],0,"The speaker is criticising a past action: **shouldn't have + past participle** = it was wrong to do it.",['shouldn’t have V3 — it was wrong to do it, but you did','might have V3 — it is possible that it happened','must have V3 — I am sure it happened','can’t have V3 — I am sure it did not happen','could have V3 — it was possible']);
+ex('e32','Grammar',"____ that Hannah had never performed in public before, she handled the concert remarkably well.",['Bringing','Accounting','Shining','Considering'],3,"**Considering that + clause** = taking into account that…");
+ex('e33','Linkers',"Some employees prefer working from home, ____ others are more productive in an office environment.",['whereas','unlike','therefore','however'],0,"**A, whereas/while B** contrasts two situations. *Unlike* is a preposition; *therefore* and *however* can't join two clauses with just a comma.");
+ex('e34','Idiom',"On weekends, I try to strike ____ between completing household tasks and having enough time to relax.",['a double bind','a leading light','the common touch','a happy medium'],3,"**strike a happy medium between A and B** = find a fair balance.",['a double bind — a situation where every choice has a bad result','a leading light — an important and influential person','the common touch — the ability to get on well with ordinary people']);
+ex('e35','Collocation',"Strict security measures have been ____ to protect customers’ personal information.",['carried','taken','tried','done'],1,"The collocation is **take measures** (passive: *measures have been taken*).",['take measures — do things to deal with a problem']);
+ex('e36','Grammar',"____, she continued working until the final report had been completed.",['However exhausted she was','No matter exhausted she was','Despite she was exhausted','Much as exhausted she was'],0,"**However + adjective + subject + verb** = no matter how… *No matter* needs *how*; *Despite* can't be followed by a clause; *Much as* can't be followed by an adjective first.");
+</script>
+
+<script id="app-js">
+(function(){
+'use strict';
+const app=document.getElementById('app');
+const BYID={};BANK.forEach(q=>{BYID[q.id]=q});
+const VI={"sour grapes": "nho còn xanh; thái độ chê thứ mình không có được","one's cup of tea": "thứ hợp gu, điều ai đó yêu thích","have green fingers": "có tay trồng cây, làm vườn giỏi","full of beans": "tràn đầy năng lượng, hăng hái","a jack of all trades": "người biết nhiều nghề nhưng không giỏi nghề nào","a jack of all trades and master of none": "người biết nhiều nghề nhưng không tinh thông nghề nào","breathe down one's neck": "theo sát, giám sát ai quá mức gây áp lực","on the straight and narrow": "sống lương thiện, đúng đắn, tuân thủ pháp luật","on the rocks": "(quan hệ, việc kinh doanh) trục trặc nặng, sắp đổ vỡ","strike a happy medium": "tìm được điểm cân bằng hợp lý","of one's own accord": "tự nguyện, tự ý (không bị ép)","fair and square": "công bằng, đường đường chính chính","safe and sound": "bình an vô sự","part and parcel of sth": "một phần tất yếu, không thể tách rời của cái gì","part and parcel (of sth)": "một phần tất yếu, không thể tách rời của cái gì","out of character": "không giống tính cách thường ngày","not in the least": "hoàn toàn không, chẳng chút nào","exert pressure on sb": "gây áp lực lên ai","take measures": "thực hiện các biện pháp","break the silence": "phá vỡ sự im lặng","stretch one's legs": "đi lại cho giãn chân tay","a glow of satisfaction": "vẻ rạng rỡ hài lòng","hold a fascination for sb": "có sức hấp dẫn đối với ai","supremely confident": "vô cùng tự tin","be inextricably linked": "gắn bó chặt chẽ, không thể tách rời","commit a crime": "phạm tội, thực hiện một vụ án","screw up one's face": "nhăn mặt (vì khó chịu)","bring up (a topic)": "đề cập, nêu ra (một chủ đề)","bring up sth": "đề cập, nêu ra (vấn đề)","bring sb up": "nuôi dạy ai","put up with": "chịu đựng, chấp nhận","mount up": "tăng dần, chồng chất","clock up": "đạt được (tổng số dặm, giờ, điểm)","cross out": "gạch bỏ","lie behind sth": "là nguyên nhân tiềm ẩn đằng sau điều gì","acquit": "tuyên trắng án, tuyên vô tội","acquit sb (of sth)": "tuyên ai trắng án, vô tội","liberate": "giải phóng, làm cho tự do","intern": "giam giữ (không xét xử, thường thời chiến)","exert": "dùng (sức mạnh, ảnh hưởng, áp lực)","deploy": "triển khai, bố trí (lực lượng, nguồn lực)","comprise": "bao gồm","be bent on doing sth": "quyết tâm làm gì","be inclined to do sth": "có xu hướng làm gì","unappealing": "không hấp dẫn, kém thu hút","nutritious": "bổ dưỡng","whereas": "trong khi (dùng để đối chiếu hai điều khác nhau)","a, whereas b": "A, trong khi B (hai tình huống đối lập)","considering that": "xét thấy rằng, xét vì","considering that + clause": "xét thấy rằng, xét vì","nevertheless": "tuy nhiên, dù vậy","likewise": "tương tự, cũng vậy","consequently": "do đó, vì vậy","audition": "buổi thử vai","be worth doing sth": "đáng để làm gì","critic": "nhà phê bình","such a(n) + adj + n = so + adj + a(n) + n": "such + a(n) + tính từ + danh từ = so + tính từ + a(n) + danh từ","excuse sb for doing sth": "tha thứ cho ai vì đã làm gì","technical": "thuộc về kỹ thuật","remarkably": "đáng kinh ngạc, vô cùng","just in case": "phòng khi, để đề phòng","at all costs": "bằng mọi giá","efficiently": "một cách hiệu quả","supervisor": "người giám sát","constantly": "liên tục, không ngừng","analyst": "nhà phân tích","inaccurate": "không chính xác","weave": "dệt, đan","confront": "đối mặt, đương đầu","be predisposed to do sth": "có khuynh hướng làm gì","be obsessed with sth": "bị ám ảnh bởi điều gì","object to (one's) doing sth": "phản đối việc ai làm gì","appoint": "bổ nhiệm","smash": "đập vỡ, làm vỡ tan","crush": "nghiền nát, ép nát","fracture": "làm gãy, nứt (xương, vật cứng)","lifespan": "tuổi thọ, vòng đời","considerably": "đáng kể","modest": "khiêm tốn; nhỏ, vừa phải","administer": "quản lý, điều hành","dismissal": "sự sa thải","blow up": "nổ tung; nổi giận","black out": "ngất đi; mất điện","inevitably": "không thể tránh khỏi","indubitably": "không còn nghi ngờ gì","indomitably": "bất khuất, không thể khuất phục","shouldn't have v3": "lẽ ra không nên làm (nhưng đã làm)","might have v3": "có lẽ đã (khả năng trong quá khứ)","must have v3": "chắc hẳn đã (suy đoán chắc chắn)","can't have v3": "chắc chắn không thể đã (suy đoán phủ định)","could have v3": "đã có thể (nhưng thực tế không làm)","a double bind": "thế tiến thoái lưỡng nan","a leading light": "nhân vật hàng đầu, có sức ảnh hưởng","the common touch": "khả năng gần gũi với người bình thường"};
+const viOf=h=>VI[String(h).toLowerCase().replace(/[’‘]/g,"'").trim()]||'';
+const viLine=t=>t?`<span class="vi"><i class="vl">VI</i>${esc(t)}</span>`:'';
+const KEY='ws-english-v2';
+let P={wrong:{},best:{},stats:{},set:{auto:true,vi:true,rate:1,accent:'en-US'}};
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s){P.wrong=s.wrong||{};P.best=s.best||{};P.stats=s.stats||{};P.set=Object.assign(P.set,s.set||{});}}catch(e){}
+const SET=P.set;
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){}};
+const $=(s,el)=>(el||document).querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function fmt(s){
+  let t=esc(s);
+  t=t.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+  t=t.replace(/\*([^*\n]+?)\*/g,'<em>$1</em>');
+  t=t.replace(/==(.+?)==/g,'<mark>$1</mark>');
+  t=t.replace(/____/g,'<span class="blank"></span>');
+  t=t.replace(/\[([A-D]):\s*([^\]]+)\]/g,'<span class="sg"><b>$1</b><u>$2</u></span>');
+  return t.replace(/\n/g,'<br>');
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const norm=s=>String(s).toLowerCase().replace(/[’‘]/g,"'").replace(/[.,!?;:"“”]/g,'').replace(/\s+/g,' ').trim();
+const canon=s=>norm(s).replace(/^(a|an|the|my|your|his|her|one's|someone's)\s+/,'');
+function lev(a,b){
+  const m=a.length,n=b.length;if(!m)return n;if(!n)return m;
+  const d=[];for(let i=0;i<=m;i++){d[i]=[i];}for(let j=0;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++){
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])d[i][j]=Math.min(d[i][j],d[i-2][j-2]+1);
+  }
+  return d[m][n];
+}
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const INSTR={mcq:'Choose the best answer',match:'Match each phrase with its meaning',type:'Type the missing word or phrase from memory',cloze:'Tap a gap, then tap a word from the bank',reorder:'Tap the words in order to build the sentence'};
+
+/* ---------- icons ---------- */
+const ICON={
+ say:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="w w1" d="M16 9.5a4 4 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="w w2" d="M18.6 7a7.6 7.6 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+ back:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ tune:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 8h9M17 8h3M4 16h3M11 16h9" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="15" cy="8" r="2.4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="16" r="2.4" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+ shuffle:'<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M3.5 7H7c3.2 0 4.6 10 9 10h4M3.5 17H7c1.4 0 2.5-1.2 3.4-2.8M13.6 9.8C14.6 8 15.6 7 17.6 7h2.4M17 4l3 3-3 3M17 14l3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ redo:'<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.7-6M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ bulb:'<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2v.2h5v-.2c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ eye:'<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+ key:'<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 10h.01M10 10h.01M14 10h.01M17.5 10h.01M8 14h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+ check:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ cross:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>',
+ half:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 7v6M12 17v.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+};
+const sayBtn=(text,cls)=>`<button class="say ${cls||''}" type="button" data-say="${esc(String(text).replace(/\s+/g,' '))}" aria-label="Listen">${ICON.say}</button>`;
+
+/* ---------- audio (Web Speech API) ---------- */
+const TTS=!!window.speechSynthesis&&!!window.SpeechSynthesisUtterance;
+if(!TTS)document.documentElement.classList.add('no-tts');
+let voices=[];
+function loadVoices(){try{voices=speechSynthesis.getVoices()||[]}catch(e){}}
+if(TTS){try{loadVoices();try{speechSynthesis.addEventListener('voiceschanged',loadVoices)}catch(e){speechSynthesis.onvoiceschanged=loadVoices}}catch(e){}}
+function pickVoice(){
+  const acc=SET.accent.toLowerCase();
+  let c=voices.filter(v=>v.lang.replace('_','-').toLowerCase()===acc);
+  if(!c.length)c=voices.filter(v=>v.lang.toLowerCase().indexOf('en')===0);
+  const pref=c.find(v=>/natural|neural|google|samantha|daniel|serena|karen|aria|jenny|libby|sonia|ava|allison/i.test(v.name));
+  return pref||c[0]||null;
+}
+function spk(t){
+  return String(t).replace(/==|\*/g,'').replace(/\[([A-D]):\s*([^\]]+)\]/g,'$2').replace(/____/g,' blank ')
+    .replace(/\bsb\b/g,'somebody').replace(/\bsth\b/g,'something').replace(/\s\/\s/g,' or ')
+    .replace(/[“”()]/g,'').replace(/\s[—–]\s/g,', ').replace(/\s+/g,' ').trim();
+}
+let curBtn=null;
+function say(text,btn){
+  if(!TTS||!text)return;
+  try{speechSynthesis.cancel();}catch(e){}
+  if(curBtn){curBtn.classList.remove('playing');curBtn=null;}
+  const u=new SpeechSynthesisUtterance(spk(text));
+  const v=pickVoice();
+  if(v){u.voice=v;u.lang=v.lang;}else u.lang=SET.accent;
+  u.rate=SET.rate;
+  if(btn){btn.classList.add('playing');curBtn=btn;}
+  const end=()=>{if(btn)btn.classList.remove('playing');if(curBtn===btn)curBtn=null;};
+  u.onend=end;u.onerror=end;
+  try{speechSynthesis.speak(u);}catch(e){end();}
+}
+function closeSound(){const w=$('#snd');if(w&&!w.hidden){w.hidden=true;const sb=$('#sndbtn');if(sb)sb.setAttribute('aria-expanded','false');return true;}return false;}
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('.say');
+  if(b){say(b.dataset.say,b);return;}
+  if(!(e.target.closest&&e.target.closest('.snd-wrap')))closeSound();
+});
+
+/* ---------- sound panel ---------- */
+function soundBtn(){
+  return `<div class="snd-wrap"><button class="icon-btn" id="sndbtn" type="button" aria-label="Settings" aria-expanded="false">${ICON.tune}</button>
+  <div class="snd" id="snd" hidden>
+   <div class="snd-row"><span>Play audio after each answer</span><button class="sw ${SET.auto?'on':''}" id="s-auto" type="button" role="switch" aria-checked="${SET.auto}" aria-label="Play audio after each answer"></button></div>
+   <div class="snd-row"><span>Show Vietnamese meanings</span><button class="sw ${SET.vi?'on':''}" id="s-vi" type="button" role="switch" aria-checked="${SET.vi}" aria-label="Show Vietnamese meanings"></button></div>
+   <div class="snd-row"><span>Speed</span><div class="segc" data-k="rate"><button type="button" data-v="1" class="${SET.rate===1?'on':''}">Normal</button><button type="button" data-v="0.7" class="${SET.rate===0.7?'on':''}">Slow</button></div></div>
+   <div class="snd-row"><span>Accent</span><div class="segc" data-k="accent"><button type="button" data-v="en-US" class="${SET.accent==='en-US'?'on':''}">US</button><button type="button" data-v="en-GB" class="${SET.accent==='en-GB'?'on':''}">UK</button></div></div>
+   <div class="snd-row"><span>Test the voice</span>${sayBtn('Strike a happy medium','mini')}</div>
+   ${TTS?'':'<p class="snd-note">This browser cannot play speech. Try Chrome, Edge or Safari.</p>'}
+  </div></div>`;
+}
+function bindSound(){
+  const b=$('#sndbtn');if(!b)return;
+  b.onclick=e=>{e.stopPropagation();const p=$('#snd');p.hidden=!p.hidden;b.setAttribute('aria-expanded',String(!p.hidden));};
+  $('#snd').onclick=e=>e.stopPropagation();
+  $('#s-auto').onclick=function(){SET.auto=!SET.auto;this.classList.toggle('on',SET.auto);this.setAttribute('aria-checked',String(SET.auto));persist();};
+  $('#s-vi').onclick=function(){SET.vi=!SET.vi;this.classList.toggle('on',SET.vi);this.setAttribute('aria-checked',String(SET.vi));persist();if(!S)drawHeroKeep();};
+  document.querySelectorAll('#snd .segc').forEach(g=>g.onclick=e=>{
+    const t=e.target.closest('button');if(!t)return;
+    const k=g.dataset.k;SET[k]=k==='rate'?parseFloat(t.dataset.v):t.dataset.v;
+    g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===t));persist();
+  });
+}
+
+/* ---------- helpers for sentences ---------- */
+const stripSpk=l=>l.replace(/^[A-Z][A-Za-z ]{0,13}:\s+/,'');
+function blankLine(p){const ls=p.split('\n');return ls.find(x=>x.includes('____'))||null;}
+function filledText(p,ans){const l=blankLine(p);return l?stripSpk(l).replace('____',ans):null;}
+function filledMark(p,ans){const l=blankLine(p);return l?stripSpk(l).replace('____','=='+ans+'=='):null;}
+function hlWords(example,term){
+  const stop={sb:1,sth:1,"one's":1,the:1,and:1,of:1,a:1,be:1,have:1,that:1};
+  const words=term.toLowerCase().replace(/\(.*?\)/g,'').split(/\s+/).filter(w=>w.length>=3&&!stop[w]);
+  let t=esc(example);
+  words.forEach(w=>{
+    const stem=w.slice(0,Math.max(3,w.length-3)).replace(/[^a-z]/g,'');
+    if(!stem)return;
+    t=t.replace(new RegExp('\\b('+stem+'[a-z]*)','ig'),'<mark>$1</mark>');
+  });
+  return t.replace(/<\/mark>(\s)<mark>/g,'$1');
+}
+
+let S=null;
+const R={};
+
+/* ---------- HOME ---------- */
+let heroP=null;
+function pickHero(){const all=[];BANK.forEach(q=>{if(q.type==='match')q.pairs.forEach(p=>all.push(p))});let p;do{p=pick(all);}while(all.length>1&&heroP&&p===heroP);return p;}
+function drawHero(keep){
+  if(!keep)heroP=pickHero();
+  $('#hero').innerHTML=`<div class="term-row">${sayBtn(heroP[0],'big')}<h1 class="term">${esc(heroP[0])}</h1></div>
+  <p class="def">${esc(heroP[1])}</p>${SET.vi&&viOf(heroP[0])?`<p class="vi-hero">${viLine(viOf(heroP[0]))}</p>`:''}
+  <div class="eg-row"><p class="eg">${hlWords(heroP[2],heroP[0])}</p>${sayBtn(heroP[2],'mini')}</div>`;
+}
+const drawHeroKeep=()=>{if($('#hero')&&heroP)drawHero(true);};
+function smartMix(n){
+  const scored=BANK.map(q=>{const st=P.stats[q.id];let s=st?st.c/st.a:0.5;if(P.wrong[q.id])s-=0.5;return {q,s:s+Math.random()*0.35};});
+  scored.sort((a,b)=>a.s-b.s);
+  return shuffle(scored.slice(0,n).map(x=>x.q));
+}
+function home(){
+  S=null;app.style.removeProperty('--sc');
+  const cnt={};BANK.forEach(q=>{cnt[q.stage]=(cnt[q.stage]||0)+1});
+  const nw=BANK.filter(q=>P.wrong[q.id]).length;
+  const nextIdx=Math.max(0,STAGES.findIndex(s=>(P.best[s.id]||0)<80));
+  const doneCnt=STAGES.filter(s=>(P.best[s.id]||0)>=80).length;
+  const sv=Object.values(P.stats||{});const seen=sv.length,ta=sv.reduce((a,x)=>a+(x.a||0),0),tc=sv.reduce((a,x)=>a+(x.c||0),0);
+  const acc=ta?Math.round(tc/ta*100)+'%':'–';
+  app.innerHTML=`
+  <div class="topbar"><span class="brand">Phrase Practice</span>${soundBtn()}</div>
+  <div class="homegrid">
+  <section class="hero"><div id="hero"></div>
+   <div class="hero-actions"><button class="btn primary" id="go" type="button">${P.best[STAGES[0].id]==null?'Start practising':'Continue with '+esc(STAGES[nextIdx].title)}</button><button class="btn ghost" id="another" type="button">Another phrase</button></div>
+   <div class="stats">
+    <div class="st"><span class="si">${ICON.eye}</span><b>${seen}<small> / ${BANK.length}</small></b><span>questions seen</span></div>
+    <div class="st"><span class="si">${ICON.check}</span><b>${acc}</b><span>first-try accuracy</span></div>
+    <div class="st"><span class="si">${ICON.redo}</span><b>${nw}</b><span>to review</span></div>
+   </div>
+  </section>
+  <div class="homeside">
+  <div class="h2row"><h2>Your route</h2><span class="muted">${doneCnt} of ${STAGES.length} complete. Score 80% to finish a stage.</span></div>
+  <ol class="route">${STAGES.map((s,i)=>{const b=P.best[s.id];const done=b!=null&&b>=80;return `<li><button class="stage" type="button" data-s="${s.id}"><span class="node ${done?'done':(i===nextIdx?'next':'')}">${done?ICON.check:i+1}</span><span class="s"><b>${esc(s.title)}</b><small>${esc(s.sub)}</small></span><span class="sm"><span>${cnt[s.id]} questions</span>${b!=null?`<span class="mini-meter"><i style="width:${b}%"></i></span><span>Best ${b}%</span>`:'<span>Not started</span>'}</span></button></li>`;}).join('')}</ol>
+  <div class="h2row"><h2>Review</h2><span class="muted">Revisit things after a day or two</span></div>
+  <ul class="acts">
+   <li><button class="stage" id="mix" type="button"><span class="node ic">${ICON.shuffle}</span><span class="s"><b>Smart review</b><small>20 questions: the ones you miss or haven't seen come first</small></span><span class="sm"><span>20 questions</span></span></button></li>
+   <li><button class="stage" id="mis" type="button" ${nw?'':'disabled'}><span class="node ic ${nw?'warn':''}">${ICON.redo}</span><span class="s"><b>Retry mistakes</b><small>${nw?'Questions you missed, until you get them right':'Nothing to retry yet. Questions you miss will collect here.'}</small></span><span class="sm"><span class="pill ${nw?'':'zero'}">${nw}</span></span></button></li>
+  </ul>
+  <p class="foot"><button class="link" id="reset" type="button">Clear saved progress</button></p>
+  </div></div>`;
+  drawHero();
+  bindSound();
+  $('#another').onclick=()=>drawHero();
+  app.querySelectorAll('.stage[data-s]').forEach(b=>b.onclick=()=>launchStage(b.dataset.s));
+  $('#go').onclick=()=>launchStage(STAGES[P.best[STAGES[0].id]==null?0:nextIdx].id);
+  $('#mix').onclick=()=>start('Smart review',smartMix(20),null);
+  $('#mis').onclick=()=>start('Retry mistakes',shuffle(BANK.filter(q=>P.wrong[q.id])),null);
+  $('#reset').onclick=()=>{if(confirm('Clear all saved progress and mistakes?')){P.wrong={};P.best={};P.stats={};persist();home();}};
+  window.scrollTo(0,0);
+}
+function launchStage(id){
+  const st=STAGES.find(s=>s.id===id);
+  let qs=BANK.filter(q=>q.stage===id);
+  if(id!=='exam')qs=shuffle(qs);
+  start(st.title,qs,id);
+}
+
+/* ---------- SESSION ---------- */
+function start(name,qs,stageId){
+  if(!qs.length){home();return;}
+  S={name,stageId,queue:qs.map(q=>({q,retry:0})),i:0,results:[],retries:[],answered:false};
+  render();
+}
+function ctlRow(o){
+  return `<div class="row ctl"><button class="btn ghost" id="hb" type="button"></button><button class="btn ghost" id="sa" type="button">${ICON.eye}<span>Show answer</span></button>${o.extra||''}<span class="grow"></span>${o.check?'<button class="btn primary" id="chk" type="button">Check</button>':''}</div>`;
+}
+function render(){
+  if(!S){home();return;}
+  if(S.i>=S.queue.length){summary();return;}
+  const it=S.queue[S.i],q=it.q;
+  {const si=STAGES.findIndex(s=>s.id===q.stage);app.style.setProperty('--sc',si>=0?`var(--s${si})`:'var(--pri)');}
+  const pct=Math.round(S.i/S.queue.length*100);
+  app.innerHTML=`
+  <div class="qtop"><button class="icon-btn" id="back" type="button" aria-label="Back to menu">${ICON.back}</button><div class="qt"><div class="stg">${esc(S.name)}</div><div class="cnt">Question ${S.i+1} of ${S.queue.length}</div></div>${soundBtn()}</div>
+  <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>
+  <div class="qgrid">
+  <main class="sheet"><div class="meta"><span class="tag">${esc(q.tag)}</span>${it.retry?'<span class="tag retry">Second look</span>':''}<span class="instr">${esc(q.instr||INSTR[q.type])}</span></div><div id="body"></div></main>
+  <aside class="side"><div class="tip" id="tip"><ul class="tl">
+   <li><span class="ti">${ICON.say}</span><span>Listen anytime</span></li>
+   <li><span class="ti">${ICON.bulb}</span><span>Hint <kbd>H</kbd></span></li>
+   <li><span class="ti">${ICON.eye}</span><span>Show answer <kbd>S</kbd></span></li>
+   <li><span class="ti">${ICON.key}</span><span>Choose <kbd>1</kbd>–<kbd>4</kbd> <kbd>Enter</kbd></span></li>
+  </ul></div><div id="fb" aria-live="polite" hidden></div></aside>
+  </div>`;
+  bindSound();
+  $('#back').onclick=()=>{if(!S.results.length||confirm('Leave this session? It will not be scored.'))home();};
+  S.answered=false;
+  R[q.type](q,$('#body'),it);
+  window.scrollTo(0,0);
+}
+function setHint(left,title){
+  const hb=$('#hb');if(!hb)return;
+  hb.title=title||'';
+  hb.innerHTML=ICON.bulb+`<span>${left>0?`Hint (${left} left)`:'No more hints'}</span>`;
+  hb.disabled=left<=0||S.answered;
+}
+function done(res,extra,spoken){
+  const it=S.queue[S.i],q=it.q;
+  S.answered=true;
+  ['#hb','#sa'].forEach(id=>{const b=$(id);if(b)b.disabled=true;});
+  const first=!!res.ok&&!res.hint&&!res.revealed&&!(res.mistakes>0);
+  if(it.retry===0){
+    S.results.push({q,ok:first,tag:q.tag,hint:!!res.hint,revealed:!!res.revealed});
+    if(first)delete P.wrong[q.id];else P.wrong[q.id]=1;
+    const st=P.stats[q.id]=P.stats[q.id]||{a:0,c:0};st.a++;if(first)st.c++;
+    persist();
+  }else S.retries.push({id:q.id,ok:first});
+  let again=false;
+  if(!first&&it.retry<2){
+    S.queue.splice(Math.min(S.i+4,S.queue.length),0,{q:res.retryQ||q,retry:it.retry+1});
+    again=true;
+  }
+  const cls=first?'ok':((res.revealed||res.ok)?'warn':'bad');
+  const icon=first?ICON.check:((res.revealed||res.ok)?ICON.half:ICON.cross);
+  const title=first?'Correct':(res.revealed?'Here is the answer':(res.msg||(res.ok?(res.hint?'Correct, with some help':'Correct, but review this one'):'Not quite')));
+  let h=`<div class="fb-h">${icon}<span>${esc(title)}</span></div>`;
+  if(extra)h+=extra;
+  if(q.explain)h+=`<p class="exp">${fmt(q.explain)}</p>`;
+  if(q.vocab&&q.vocab.length)h+=`<div class="vocab"><b>Remember</b><ul>${q.vocab.map(v=>{
+    const parts=v.split(' — ');const hasSay=parts.length>1&&!/V3|[+=]/.test(parts[0]);
+    const vi=SET.vi?viLine(viOf(parts[0])):'';
+    return `<li>${hasSay?sayBtn(parts[0],'mini'):''}<span>${hasSay?`<b>${esc(parts[0])}</b> — ${esc(parts.slice(1).join(' — '))}`:fmt(v)}${vi}</span></li>`;}).join('')}</ul></div>`;
+  if(again)h+=`<p class="again">This one will come back in a few questions.</p>`;
+  const last=S.i+1>=S.queue.length;
+  const nxHTML=`<button class="btn primary ${'NXCLS'}" id="nx" type="button">${last?'See results':'Next question'}</button>`;
+  const ctl=document.querySelector('.sheet .ctl');
+  const wide=!(window.matchMedia&&window.matchMedia('(max-width:1000px)').matches);
+  const inCard=wide&&!!ctl;
+  if(!inCard)h+=nxHTML.replace('NXCLS','wide');
+  const fb=$('#fb');fb.className=cls;fb.hidden=false;fb.innerHTML=h;
+  const tip=$('#tip');if(tip)tip.hidden=true;
+  if(inCard){
+    const c=$('#chk');if(c)c.style.display='none';
+    ctl.insertAdjacentHTML('beforeend',nxHTML.replace('NXCLS','nxc'));
+  }
+  $('#nx').onclick=next;
+  try{$('#nx').focus({preventScroll:true});}catch(e){}
+  if(SET.auto&&spoken){const sb=$('#fb .full .say');say(spoken,sb||null);}
+  // narrow layout: bring the feedback into view only if it starts low on screen
+  if(!inCard&&window.scrollBy){const top=fb.getBoundingClientRect().top;if(top>window.innerHeight*0.6)window.scrollBy({top:top-72,behavior:'smooth'});}
+}
+function next(){S.i++;S.answered=false;render();}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(closeSound()){const sb=$('#sndbtn');if(sb)sb.focus();}return;}
+  if(!S||S.i>=S.queue.length||e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;
+  const tg=(e.target.tagName||'').toLowerCase();
+  if(e.key==='Enter'){
+    if(tg==='button')return;
+    if(S.answered){e.preventDefault();next();}
+    else if(tg==='input'){e.preventDefault();const c=$('#chk');if(c)c.click();}
+  }else if(!S.answered&&tg!=='input'){
+    const ch=e.key.toLowerCase();
+    if(ch==='h'){const b=$('#hb');if(b&&!b.disabled)b.click();return;}
+    if(ch==='s'){const b=$('#sa');if(b&&!b.disabled)b.click();return;}
+    const k='1234abcd'.indexOf(ch);
+    if(k>=0){const b=$('.opt[data-i="'+(k%4)+'"]');if(b&&!b.disabled)b.click();}
+  }
+});
+const fullRow=(markText,spokenText)=>`<div class="full">${sayBtn(spokenText,'mini')}<p>${fmt(markText)}</p></div>`;
+
+/* ---------- RENDERERS ---------- */
+R.mcq=(q,body)=>{
+  let opts=q.options.map((t,i)=>({t,c:i===q.answer}));
+  if(!q.fixed)opts=shuffle(opts);
+  body.innerHTML=`<div class="pr">${sayBtn(q.prompt.replace(/\n/g,' '))}<div class="prompt">${fmt(q.prompt)}</div></div>
+  <div class="opts">${opts.map((o,i)=>`<div class="opt-row"><button class="opt" type="button" data-i="${i}"><span class="k">${'ABCD'[i]}</span><span class="t">${esc(o.t)}</span></button>${sayBtn(o.t,'mini')}</div>`).join('')}</div>${ctlRow({})}`;
+  const btns=[...body.querySelectorAll('.opt')];
+  const maxH=Math.max(0,opts.length-2);let hints=0;
+  setHint(maxH,'Remove one wrong option');
+  function finish(i,revealed){
+    btns.forEach((x,j)=>{x.disabled=true;if(opts[j].c)x.classList.add('correct');});
+    if(i!==null&&!opts[i].c)btns[i].classList.add('wrong');
+    const right=opts.find(o=>o.c).t;
+    const ft=filledText(q.prompt,right);
+    done({ok:i!==null&&opts[i].c,hint:hints>0,revealed},ft?fullRow(filledMark(q.prompt,right),ft):'',ft);
+  }
+  btns.forEach((b,i)=>b.onclick=()=>{if(!S.answered)finish(i,false);});
+  $('#hb').onclick=()=>{
+    if(S.answered||hints>=maxH)return;
+    const cand=btns.map((b,i)=>i).filter(i=>!opts[i].c&&!btns[i].disabled);
+    if(!cand.length)return;
+    const i=pick(cand);btns[i].disabled=true;btns[i].classList.add('out');
+    hints++;setHint(maxH-hints,'Remove one wrong option');
+  };
+  $('#sa').onclick=()=>{if(!S.answered)finish(null,true);};
+};
+
+function slotHTML(str){
+  const m=/\s{3}\(([^)]*)\)$/.exec(str);
+  const core=m?str.slice(0,m.index):str;
+  const w=core.split(/ {5}/).map(wd=>`<span class="hw">${wd.split(' ').map(c=>c==='_'?'<i class="slot"></i>':`<i class="slot f">${esc(c)}</i>`).join('')}</span>`).join('');
+  return w+(m?`<span class="si">${esc(m[1])}</span>`:'');
+}
+R.type=(q,body)=>{
+  const a0=q.answers[0];
+  const words=a0.split(' ');
+  const levels=[
+    ()=>words.map(w=>'_ '.repeat(w.length).trim()).join('     ')+`   (${words.length} word${words.length>1?'s':''}, ${a0.replace(/ /g,'').length} letters)`,
+    ()=>words.map(w=>w.charAt(0)+' _'.repeat(Math.max(w.length-1,0))).join('     '),
+    ()=>words.map(w=>w.split('').map((c,i)=>(i%2===0||i===w.length-1)?c:'_').join(' ')).join('     ')
+  ];
+  let hints=0;
+  body.innerHTML=`<div class="pr">${sayBtn(q.prompt)}<div class="prompt">${fmt(q.prompt)}</div></div>${q.clue?`<div class="clue">Clue: ${esc(q.clue)}</div>`:''}
+  <input id="inp" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Type your answer" aria-label="Your answer">
+  <div class="hint" id="ho"></div>${ctlRow({check:true})}`;
+  const inp=$('#inp');
+  try{inp.focus();}catch(e){}
+  setHint(levels.length,'Reveal more of the answer each time');
+  $('#hb').onclick=()=>{
+    if(S.answered||hints>=levels.length)return;
+    $('#ho').innerHTML=slotHTML(levels[hints]());$('#ho').setAttribute('aria-label',levels[hints]().replace(/_/g,'blank'));hints++;
+    setHint(levels.length-hints,'Reveal more of the answer each time');
+    inp.focus();
+  };
+  function end(ok,revealed,typed,msg){
+    inp.disabled=true;$('#chk').disabled=true;
+    if(revealed)inp.value=a0;
+    inp.classList.add(ok?'okc':'badc');
+    let extra='';
+    if(!ok&&!revealed)extra+=`<p class="exp">You typed: <s>${esc(typed)}</s></p>`;
+    const ft=filledText(q.prompt,a0);
+    extra+=fullRow(filledMark(q.prompt,a0),ft)+(q.answers.length>1?`<p class="exp">Also accepted: ${q.answers.slice(1).map(esc).join(', ')}</p>`:'');
+    done({ok,hint:hints>0,revealed,msg},extra,ft);
+  }
+  $('#chk').onclick=()=>{
+    if(S.answered)return;
+    const v=inp.value;if(!norm(v))return;
+    const ok=q.answers.some(a=>canon(a)===canon(v));
+    let close=false;
+    if(!ok)close=q.answers.some(a=>{const x=canon(a),y=canon(v);return x.length>=5&&lev(x,y)<=1;});
+    end(ok,false,v,close?'So close. Check the spelling':'');
+  };
+  $('#sa').onclick=()=>{if(!S.answered)end(false,true,'','');};
+};
+
+R.cloze=(q,body)=>{
+  const n=q.answers.length;
+  const bank=shuffle(q.bank.map((t,i)=>({t,i})));
+  const fill=Array(n).fill(null);
+  const locked=new Set();
+  const ansIdx=q.answers.map(a=>q.bank.findIndex(b=>b.toLowerCase()===a.toLowerCase()));
+  const distract=q.bank.map((b,i)=>i).filter(i=>!ansIdx.includes(i));
+  let active=0,checked=false,dimmed=false,used=false;
+  const lines=q.text.split('\n').map(l=>{
+    let h=esc(l).replace(/^([A-Z][A-Za-z ]{0,13}):\s/,'<b class="spk">$1:</b> ');
+    h=h.replace(/\{(\d)\}/g,(m,k)=>`<button class="gap" type="button" data-g="${k-1}"></button>`);
+    return `<p class="line">${h}</p>`;
+  });
+  const gapSay=q.text.split('\n').map(stripSpk).join(' ').replace(/\{\d\}/g,' blank ');
+  body.innerHTML=`<div class="story-head">${sayBtn(gapSay)}<b>${esc(q.title)}</b></div><div class="story">${lines.join('')}</div><div class="bankwrap"><p class="bank-l"><span>Word bank</span><span class="cp" id="cprog"></span></p><div class="bank" id="bank"></div></div>${ctlRow({check:true})}`;
+  const okAt=k=>fill[k]!==null&&q.bank[fill[k]].toLowerCase()===q.answers[k].toLowerCase();
+  const firstFree=()=>{for(let j=0;j<n;j++)if(!locked.has(j)&&fill[j]===null)return j;return -1;};
+  const firstOpen=()=>{for(let j=0;j<n;j++)if(!locked.has(j))return j;return 0;};
+  const hintsLeft=()=>(distract.length&&!dimmed?1:0)+(n-locked.size);
+  function paint(){
+    body.querySelectorAll('.gap').forEach(g=>{
+      const k=+g.dataset.g,f=fill[k];
+      g.innerHTML=f===null?`<span class="gn">${k+1}</span>`:esc(q.caps.includes(k+1)?cap(q.bank[f]):q.bank[f]);
+      g.className='gap'+(f===null?'':' filled')+(locked.has(k)?' locked':'')+(k===active&&!checked?' active':'')+(checked?(okAt(k)?' okc':' badc'):'');
+    });
+    $('#bank').innerHTML=bank.map(b=>{const out=dimmed&&distract.includes(b.i);return `<button class="chip${out?' out':''}" type="button" data-b="${b.i}" ${fill.includes(b.i)||checked||out?'disabled':''}>${esc(b.t)}</button>`;}).join('');
+    $('#cprog').textContent=`${fill.filter(x=>x!==null).length} of ${n} placed`;
+    $('#chk').disabled=checked||fill.some(x=>x===null);
+    setHint(checked?0:hintsLeft(),'Narrow the choices, then fill gaps one by one');
+  }
+  body.querySelectorAll('.gap').forEach(g=>g.onclick=()=>{
+    if(checked||S.answered)return;
+    const k=+g.dataset.g;if(locked.has(k))return;
+    fill[k]=null;active=k;paint();
+  });
+  $('#bank').onclick=e=>{
+    const c=e.target.closest('.chip');if(!c||checked||c.disabled)return;
+    let t=(!locked.has(active)&&fill[active]===null)?active:firstFree();
+    if(t<0)t=locked.has(active)?-1:active;
+    if(t<0)return;
+    fill[t]=+c.dataset.b;
+    const nx=firstFree();
+    active=nx<0?t:nx;paint();
+  };
+  $('#hb').onclick=()=>{
+    if(checked||S.answered||hintsLeft()<=0)return;
+    used=true;
+    if(distract.length&&!dimmed){dimmed=true;}
+    else{
+      const k=firstOpen();
+      const c=ansIdx[k];const other=fill.indexOf(c);if(other>=0&&other!==k)fill[other]=null;
+      fill[k]=c;locked.add(k);
+      active=firstOpen();
+    }
+    paint();
+  };
+  function end(revealed){
+    checked=true;
+    const wrong=[];for(let k=0;k<n;k++)if(!okAt(k))wrong.push(k);
+    paint();
+    let full=q.text.split('\n').map(stripSpk).join(' ');
+    q.answers.forEach((a,k)=>{full=full.replace('{'+(k+1)+'}','=='+(q.caps.includes(k+1)?cap(a):a)+'==');});
+    const plain=full.replace(/==/g,'');
+    done({ok:wrong.length===0,hint:used,revealed,mistakes:wrong.length,msg:(!revealed&&wrong.length)?`${n-wrong.length} of ${n} gaps correct`:''},fullRow(full,plain),plain);
+  }
+  $('#chk').onclick=()=>{if(S.answered||fill.some(x=>x===null))return;end(false);};
+  $('#sa').onclick=()=>{if(S.answered)return;for(let k=0;k<n;k++)fill[k]=ansIdx[k];end(true);};
+  paint();
+};
+
+R.reorder=(q,body)=>{
+  const words=q.answer.split(' ');
+  const pool=shuffle(words.map((w,i)=>({w,i})));
+  let placed=[],checked=false,used=false;
+  body.innerHTML=`<div class="rline" id="rl"></div><div class="bankwrap tray"><p class="bank-l"><span>Word bank</span><span class="cp" id="rprog"></span></p><div class="pool" id="pl"></div></div>${ctlRow({check:true,extra:`<button class="btn ghost" id="rs" type="button">${ICON.redo}<span>Start over</span></button>`})}`;
+  const prefix=()=>{let m=0;while(m<placed.length&&placed[m].w===words[m])m++;return m;};
+  function paint(cls){
+    $('#rl').innerHTML=placed.length?placed.map(p=>`<button class="tile on ${cls||''}" type="button" data-p="${p.i}">${esc(p.w)}</button>`).join(''):'<span class="ph">Your sentence will appear here</span>';
+    $('#pl').innerHTML=pool.map(p=>`<button class="tile" type="button" data-p="${p.i}" ${placed.includes(p)?'hidden':''}>${esc(p.w)}</button>`).join('');
+    $('#rprog').textContent=`${placed.length} of ${words.length} placed`;
+    $('#chk').disabled=checked||placed.length!==words.length;
+    $('#rs').disabled=checked;
+    setHint(checked?0:words.length-prefix(),'Place the next correct word');
+  }
+  $('#pl').onclick=e=>{const b=e.target.closest('.tile');if(!b||checked)return;const it=pool.find(p=>p.i===+b.dataset.p);if(it&&!placed.includes(it)){placed.push(it);paint();}};
+  $('#rl').onclick=e=>{const b=e.target.closest('.tile');if(!b||checked)return;placed=placed.filter(p=>p.i!==+b.dataset.p);paint();};
+  $('#rs').onclick=()=>{if(!checked){placed=[];paint();}};
+  $('#hb').onclick=()=>{
+    if(checked||S.answered)return;
+    const m=prefix();if(m>=words.length)return;
+    placed=placed.slice(0,m);
+    const it=pool.find(p=>p.w===words[m]&&!placed.includes(p));
+    if(it){placed.push(it);used=true;}
+    paint();
+  };
+  function end(ok,revealed){
+    checked=true;
+    paint(ok?'okc':'badc');
+    done({ok,hint:used,revealed},fullRow('=='+q.answer+'==',q.answer),q.answer);
+  }
+  $('#chk').onclick=()=>{
+    if(S.answered||placed.length!==words.length)return;
+    const s=norm(placed.map(p=>p.w).join(' '));
+    end([q.answer].concat(q.alts||[]).some(a=>norm(a)===s),false);
+  };
+  $('#sa').onclick=()=>{
+    if(S.answered)return;
+    const left=pool.slice();placed=words.map(w=>{const k=left.findIndex(p=>p.w===w);return left.splice(k,1)[0];});
+    end(true,true);
+  };
+  paint();
+};
+
+R.match=(q,body)=>{
+  const PR=q.pairs;
+  const order=shuffle(PR.map((p,i)=>i));
+  let sel=null,mistakes=0,hints=0;const matched=new Set(),missed=new Set(),shown=new Set();
+  body.innerHTML=`<div class="mwrap" id="mw"><svg class="mlines" id="mln" aria-hidden="true"></svg><div class="mcols"><div class="mcol" id="ml">${PR.map((p,i)=>`<div class="mrow">${sayBtn(p[0],'mini')}<button class="mi" type="button" data-i="${i}">${esc(p[0])}</button></div>`).join('')}</div><div class="mcol" id="mr">${order.map(i=>`<div class="mrow"><button class="mi" type="button" data-i="${i}">${esc(PR[i][1])}</button></div>`).join('')}</div></div></div><div class="mfoot"><span class="mnote" id="mm">Pick a phrase on the left first. Tap the speaker to hear it.</span><span class="cp" id="mc"></span></div>${ctlRow({})}`;
+  const L=[...body.querySelectorAll('#ml .mi')],Rr=[...body.querySelectorAll('#mr .mi')];
+  const wrap=$('#mw'),svg=$('#mln');
+  const left=()=>PR.length-matched.size;
+  const paths=new Map();
+  const pairEl=i=>[L.find(x=>+x.dataset.i===i),Rr.find(x=>+x.dataset.i===i)];
+  function pathD(i){
+    const [l,r]=pairEl(i),w=wrap.getBoundingClientRect(),a=l.getBoundingClientRect(),b=r.getBoundingClientRect();
+    const x1=a.right-w.left,y1=a.top+a.height/2-w.top,x2=b.left-w.left,y2=b.top+b.height/2-w.top,h=(x2-x1)*.5;
+    return `M${x1} ${y1}C${x1+h} ${y1} ${x2-h} ${y2} ${x2} ${y2}`;
+  }
+  function lay(){paths.forEach((el,i)=>el.setAttribute('d',pathD(i)));}
+  function progress(){$('#mc').textContent=`${matched.size} of ${PR.length} matched`;wrap.classList.toggle('picking',sel!==null);}
+  setHint(left(),'Match one pair for you');
+  progress();
+  if(typeof ResizeObserver!=='undefined')new ResizeObserver(lay).observe(wrap);
+  function lock(i,viaHelp){
+    const color=`var(--m${matched.size%6})`;
+    matched.add(i);
+    pairEl(i).forEach(el=>{el.className='mi done';el.style.setProperty('--mc',color);});
+    const pe=document.createElementNS('http://www.w3.org/2000/svg','path');
+    pe.setAttribute('pathLength','1');pe.style.stroke=color;pe.setAttribute('d',pathD(i));
+    svg.appendChild(pe);paths.set(i,pe);
+    if(viaHelp)shown.add(i);
+  }
+  L.forEach(b=>b.onclick=()=>{
+    if(S.answered||matched.has(+b.dataset.i))return;
+    const i=+b.dataset.i;
+    sel=i;L.forEach(x=>x.classList.toggle('sel',x===b));
+    $('#mm').textContent='Now pick the matching meaning on the right.';
+    progress();
+    if(SET.auto)say(PR[i][0],null);
+  });
+  Rr.forEach(b=>b.onclick=()=>{
+    if(S.answered)return;
+    const i=+b.dataset.i;if(matched.has(i))return;
+    if(sel===null){$('#mm').textContent='Pick a phrase on the left first.';return;}
+    if(sel===i){
+      lock(i,false);sel=null;L.forEach(x=>x.classList.remove('sel'));$('#mm').textContent='Match!';
+      setHint(left(),'Match one pair for you');progress();
+      if(matched.size===PR.length)finish(false);
+    }else{
+      mistakes++;missed.add(sel);
+      b.classList.add('shake','bad');setTimeout(()=>b.classList.remove('shake','bad'),450);
+      $('#mm').textContent='Not a match. Try again.';
+    }
+  });
+  $('#hb').onclick=()=>{
+    if(S.answered||left()<=0)return;
+    const i=sel!==null&&!matched.has(sel)?sel:PR.map((p,k)=>k).find(k=>!matched.has(k));
+    lock(i,true);hints++;sel=null;L.forEach(x=>x.classList.remove('sel'));
+    $('#mm').textContent='One pair matched for you.';
+    setHint(left(),'Match one pair for you');progress();
+    if(matched.size===PR.length)finish(false);
+  };
+  $('#sa').onclick=()=>{
+    if(S.answered)return;
+    PR.forEach((p,i)=>{if(!matched.has(i))lock(i,true);});
+    sel=null;L.forEach(x=>x.classList.remove('sel'));progress();$('#mm').textContent='Here are all the pairs.';
+    finish(true);
+  };
+  function finish(revealed){
+    let retryQ=null;
+    const again=new Set([...missed,...shown]);
+    if(again.size>0){
+      const sub=[...again].sort().map(i=>PR[i]);
+      const others=PR.filter((p,i)=>!again.has(i));
+      while(sub.length<3&&others.length)sub.push(others.shift());
+      retryQ=Object.assign({},q,{pairs:sub});
+    }
+    const extra=`<ul class="exl">${PR.map(p=>`<li><div class="eh"><b>${esc(p[0])}</b>${sayBtn(p[0],'mini')}</div>${SET.vi&&viOf(p[0])?viLine(viOf(p[0])):`<div class="em">${esc(p[1])}</div>`}<div class="el"><i>${hlWords(p[2],p[0])}</i>${sayBtn(p[2],'mini')}</div></li>`).join('')}</ul>`;
+    const assisted=hints>0||shown.size>0;
+    done({ok:true,hint:assisted,revealed,mistakes,retryQ,msg:mistakes&&!revealed?`All matched, with ${mistakes} wrong ${mistakes===1?'try':'tries'}`:''},extra,null);
+  }
+};
+
+/* ---------- SUMMARY ---------- */
+function qShort(q){
+  let t;
+  if(q.type==='match')t='Matching: '+q.title;
+  else if(q.type==='cloze')t=q.title;
+  else if(q.type==='reorder')t='Reorder the sentence';
+  else t=q.prompt.replace(/\n/g,' ').replace(/\[([A-D]):\s*([^\]]+)\]/g,'$2');
+  t=t.replace(/\*\*|==/g,'').replace(/\*([^*\n]+?)\*/g,'$1');
+  return t.length>130?t.slice(0,127)+'…':t;
+}
+function qAns(q){
+  if(q.type==='match')return 'Review: '+q.pairs.map(p=>p[0]).join(', ');
+  if(q.type==='cloze')return q.answers.join(', ');
+  if(q.type==='reorder')return q.answer;
+  if(q.type==='type')return q.answers[0];
+  return q.options[q.answer];
+}
+function qSay(q){
+  if(q.type==='match')return '';
+  if(q.type==='cloze'){let t=q.text.split('\n').map(stripSpk).join(' ');q.answers.forEach((a,k)=>{t=t.replace('{'+(k+1)+'}',a);});return t;}
+  if(q.type==='reorder')return q.answer;
+  const a=qAns(q);
+  return filledText(q.prompt,a)||a;
+}
+function summary(){
+  app.style.removeProperty('--sc');
+  const Rs=S.results,total=Rs.length,good=Rs.filter(r=>r.ok).length,pct=total?Math.round(good/total*100):0;
+  if(S.stageId){P.best[S.stageId]=Math.max(P.best[S.stageId]||0,pct);persist();}
+  const tags={};Rs.forEach(r=>{const t=tags[r.tag]=tags[r.tag]||{n:0,g:0};t.n++;if(r.ok)t.g++;});
+  const bad=Rs.filter(r=>!r.ok);
+  const rec=S.retries.filter(r=>r.ok).length;
+  const hinted=Rs.filter(r=>r.hint&&!r.revealed).length,shown=Rs.filter(r=>r.revealed).length;
+  const weak=Object.keys(tags).filter(k=>tags[k].n>=2&&tags[k].g/tags[k].n<0.7).sort((a,b)=>tags[a].g/tags[a].n-tags[b].g/tags[b].n);
+  const msg=pct>=90?'Excellent. Try Smart review in a day or two to test your long-term memory.':pct>=70?'Good work. Look at the questions below, then retry them while they are fresh.':'This takes repetition, and that is normal. Run this stage again and try to recall each answer before using hints.';
+  app.innerHTML=`
+  <div class="qtop"><button class="icon-btn" id="home-btn" type="button" aria-label="Back to menu">${ICON.back}</button><div class="qt"><div class="stg">${esc(S.name)}</div><div class="cnt">Results</div></div>${soundBtn()}</div>
+  <div class="sgrid"><div>
+  <main class="sheet">
+   <div class="sumtop">
+    <div class="ring" style="--rc:${pct>=90?'var(--ok)':pct>=70?'var(--pri)':'var(--m1)'}" role="img" aria-label="${pct} percent"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="tr" cx="60" cy="60" r="52"/><circle class="pg" cx="60" cy="60" r="52" style="stroke-dashoffset:${(326.7*(1-pct/100)).toFixed(1)}"/></svg><span class="big-pct">${pct}%</span></div>
+    <div class="sumtxt"><p class="sum-h">You got <b>${good} of ${total}</b> right on the first try</p>
+     <div class="dots" aria-hidden="true">${Rs.map(r=>`<i class="${r.ok?'ok':''}"></i>`).join('')}</div></div>
+   </div>
+   <p class="muted">${msg}</p>
+   ${(hinted||shown)?`<p class="muted">Help used: hints on ${hinted} question${hinted===1?'':'s'}, answers revealed on ${shown}. Questions that needed help count as not yet learned.</p>`:''}
+   ${S.retries.length?`<p class="muted">Second looks: you recovered ${rec} of ${S.retries.length}.</p>`:''}
+  </main>
+  <h2>By skill</h2>
+  <div class="sheet">${Object.keys(tags).map(k=>{const t=tags[k],p=Math.round(t.g/t.n*100);return `<div class="tagrow"><span>${esc(k)}</span><span class="meter"><i style="width:${p}%"></i></span><span>${t.g}/${t.n}</span></div>`;}).join('')}
+  ${weak.length?`<p class="muted">Worth more practice: <b>${weak.map(esc).join(', ')}</b></p>`:''}</div>
+  </div><div>
+  ${bad.length?`<h2>Questions to review (${bad.length})</h2><div class="sheet"><ul class="wl">${bad.map(r=>{const sx=qSay(r.q);return `<li>${sx?sayBtn(sx,'mini'):''}<div class="tx">${esc(qShort(r.q))}<small>Answer: <b>${esc(qAns(r.q))}</b></small></div></li>`;}).join('')}</ul></div>`:''}
+  <div class="review-row" style="margin-top:18px">${bad.length?'<button class="btn primary" id="again" type="button">Retry these questions</button>':'<button class="btn primary" id="repeat" type="button">Practise this stage again</button>'}<button class="btn" id="menu" type="button">Back to menu</button></div>
+  </div></div>`;
+  bindSound();
+  const a=$('#again');if(a)a.onclick=()=>start('Retry mistakes',shuffle(bad.map(r=>BYID[r.q.id])),null);
+  const rp=$('#repeat');if(rp)rp.onclick=()=>{
+    if(S.stageId)launchStage(S.stageId);else start(S.name,smartMix(20),null);
+  };
+  $('#menu').onclick=home;$('#home-btn').onclick=home;
+  window.scrollTo(0,0);
+}
+
+window.__ws={cur:()=>S&&S.queue[S.i],state:()=>S,start,home};
+home();
+})();
+</script>
+</body>
+</html>
